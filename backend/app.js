@@ -7,6 +7,9 @@ const app = express();
 
 const index = require("./routes/index");
 
+// eslint-disable-next-line no-unused-vars
+const sequelize = require("./models/index");
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
