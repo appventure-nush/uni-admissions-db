@@ -1,5 +1,5 @@
 const express = require("express");
-const testController = require("../controllers/TestController");
+const { ApplicationsController, UniversitiesController } = require("../controllers/index");
 
 const router = express.Router();
 
@@ -7,15 +7,12 @@ router.get("/", (req, res) => {
   res.end("Hello, world");
 });
 
-router.post("/create", async (req, res) => {
-  const { name } = req.body;
-  await testController.createUser(name);
-  res.end("User created");
+router.get("/applications", async (req, res) => {
+  const applications = await ApplicationsController.getApplicationsAllData();
+  res.json(applications);
 });
 
-router.get("/users", async (req, res) => {
-  const users = await testController.getUsers();
-  res.json(users);
+router.get("/universities", async (req, res) => {
+  res.json(await UniversitiesController.getUniversities());
 });
-
 module.exports = router;
