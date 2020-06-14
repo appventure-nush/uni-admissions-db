@@ -22,20 +22,23 @@ const majors = [{
   category: "Computing",
 }];
 
-const students = [{
-  studentId: "a1",
-  gradCap: 5.0,
-}];
+const students = [...Array(2000).keys()].map((i) => ({
+  studentId: `a${i}`,
+  gradCap: parseFloat((Math.random() * (5 - 2) + 2).toFixed(1)),
+}));
 
-const applications = [{
-  uniName: "CMU",
-  majorName: "Computer Science",
-  status: "Offered - Accepted",
-  studentId: "a1",
-  informant: "allan",
-  dateInformed: null,
-  comment: null,
-}];
+const applications = [...Array(1440 * 10).keys()].map(() => {
+  const major = majors[(Math.random() > 0.5) + 0];
+  return {
+    studentId: `a${Math.floor(Math.random() * 2000)}`,
+    majorName: major.majorName,
+    uniName: major.uniName,
+    status: "Offered - Accepted",
+    comment: null,
+    informant: "allan",
+    dateInformed: null,
+  };
+});
 
 require("debug").log(`Tables will be dropped before loading data.
 All existing data will be lost.
@@ -63,33 +66,16 @@ setTimeout(async () => {
 
   await Application.sync({ force: true });
 
-  await Promise.all(universities.map(async (university) => UniversityTable.create({
+  await UniversityTable.bulkCreate(universities.map((university) => ({
     uniName: university.name,
     country: university.country,
   })));
 
-  await Promise.all(students.map(async (student) => Student.create({
-    studentId: student.studentId,
-    gradCap: student.gradCap,
-  })));
+  await Student.bulkCreate(students);
 
-  await Promise.all(majors.map(async (major) => Major.create({
-    majorName: major.majorName,
-    category: major.category,
-    uniName: major.uniName,
-  })));
+  await Major.bulkCreate(majors);
 
-  await Promise.all(applications.map(async (application) => {
-    Application.create({
-      studentId: application.studentId,
-      majorName: application.majorName,
-      uniName: application.uniName,
-      status: application.status,
-      informant: application.informant,
-      dateInformed: application.dateInformed,
-      comment: application.comment,
-    });
-  }));
+  await Application.bulkCreate(applications);
 
   setTimeout(() => {
     sequelize.close();

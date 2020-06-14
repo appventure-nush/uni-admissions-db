@@ -15,4 +15,26 @@ module.exports = {
       }],
     });
   },
+
+  async getApplications() {
+    return ApplicationTable.findAll();
+  },
+
+  async getAverageCap() {
+    const students = new Map();
+    const data = await ApplicationTable.findAll({
+      where: {
+        uniName: "NUS",
+      },
+      include: [{
+        model: Student,
+        attributes: ["gradCap"],
+      }],
+    });
+    data.forEach((d) => {
+      students.set(d.studentId, d.student.gradCap);
+    });
+    const sum = Array.from(students.values()).reduce((a, b) => a + parseFloat(b), 0);
+    return sum / students.size;
+  },
 };

@@ -7,8 +7,18 @@ router.get("/", (req, res) => {
   res.end("Hello, world");
 });
 
-router.get("/api/applications", async (req, res) => {
+router.get("/api/applications/all", async (req, res) => {
   const applications = await ApplicationsController.getApplicationsAllData();
+  res.json(applications);
+});
+
+router.get("/api/applications", async (req, res) => {
+  const applications = await ApplicationsController.getApplications();
+  res.json(applications);
+});
+
+router.get("/api/applications/avgcap", async (req, res) => {
+  const applications = await ApplicationsController.getAverageCap();
   res.json(applications);
 });
 

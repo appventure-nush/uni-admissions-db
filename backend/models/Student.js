@@ -10,7 +10,7 @@ const Student = sequelize.define("student", {
   },
   gradCap: {
     allowNull: false,
-    type: Sequelize.DECIMAL(1),
+    type: Sequelize.DECIMAL(2, 1),
   },
 });
 
