@@ -1,5 +1,5 @@
 const verify = require("../utils/auth");
-const config = require("../config.json");
+const config = require("../config");
 
 module.exports = (adminOnly) => async (req, res, next) => {
   const { token } = req.cookies;

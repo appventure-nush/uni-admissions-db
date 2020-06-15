@@ -1,6 +1,6 @@
 const jwksClient = require("jwks-rsa");
 const verify = require("jsonwebtoken/verify");
-const { MS_CLIENT_ID: clientId } = require("../config.json");
+const { MS_CLIENT_ID: clientId } = require("../config");
 
 // https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=ad4c43c7-eaff-45f7-b7b4-fedc6bcb85ca&redirect_uri=http://localhost:3000&response_type=id_token&nonce=iwanttodie
 module.exports = async function verifyToken(token) {

@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
 const logger = require("debug");
-const config = require("../config.json");
+const config = require("../config");
 
 const sequelize = new Sequelize(config.DB_NAME, config.DB_USER, config.DB_PASSWORD, {
-  host: "localhost",
+  host: config.DB_HOST,
   dialect: "postgres",
   define: {
     timestamps: false,

@@ -3,6 +3,10 @@ const Major = require("../models/Major");
 const Student = require("../models/Student");
 const University = require("../models/University");
 
+Student.sync()
+  .then(() => University.sync())
+  .then(() => Major.sync())
+  .then(() => ApplicationTable.sync());
 module.exports = {
   async getApplicationsAllData() {
     return ApplicationTable.findAll({
