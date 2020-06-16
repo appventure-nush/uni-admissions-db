@@ -62,3 +62,4 @@ typings/
 
 *.json
 !example.config.json
+public
