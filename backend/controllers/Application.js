@@ -8,7 +8,7 @@ Student.sync()
   .then(() => Major.sync())
   .then(() => ApplicationTable.sync());
 module.exports = {
-  async getApplicationsAllData() {
+  async getApplicationsAllData({ offset, limit }) {
     return ApplicationTable.findAll({
       include: [{
         model: Major,
@@ -17,11 +17,16 @@ module.exports = {
       }, {
         model: University,
       }],
+      offset,
+      limit,
     });
   },
 
-  async getApplications() {
-    return ApplicationTable.findAll();
+  async getApplications({ offset, limit }) {
+    return ApplicationTable.findAll({
+      offset,
+      limit,
+    });
   },
 
   async getAverageCap() {
