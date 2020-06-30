@@ -3,6 +3,8 @@ module.exports = {
     let { offset, limit } = req.query;
     if (!offset) offset = 0;
     if (!limit) limit = 10;
+    offset = parseInt(offset, 10);
+    limit = parseInt(limit, 10);
     if (limit > 30) limit = 30;
     return { offset, limit };
   },

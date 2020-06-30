@@ -31,10 +31,6 @@ router.get("/api/applications/avgcap", async (req, res) => {
   res.json(applications);
 });
 
-router.get("/api/admin", async (req, res) => {
-  res.end("Ok");
-});
-
 router.get("/api/universities", async (req, res) => {
   const universities = await UniversitiesController.getUniversities();
   pretty(req, res, universities);
