@@ -28,6 +28,13 @@ module.exports = {
       limit,
     });
   },
+  async getApplicationsBasic({ offset, limit }) {
+    return ApplicationTable.findAll({
+      offset,
+      limit,
+      attributes: ["id", "studentId", "majorId", "uniName", "status"],
+    });
+  },
 
   async getAverageCap() {
     const students = new Map();
