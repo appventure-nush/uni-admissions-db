@@ -4,10 +4,14 @@ const sequelize = require("./index");
 const University = require("./University");
 
 const Major = sequelize.define("major", {
+  majorId: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   majorName: {
     type: Sequelize.STRING,
     allowNull: false,
-    primaryKey: true,
   },
   category: {
     type: Sequelize.STRING,

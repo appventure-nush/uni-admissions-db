@@ -1,44 +1,83 @@
-const universities = [{
-  name: "NUS",
-  country: "Singapore",
-}, {
-  name: "NTU",
-  country: "Singapore",
-}, {
-  name: "MIT",
-  country: "United States",
-}, {
-  name: "CMU",
-  country: "United States",
-}];
+// const universities = [{
+//   name: "NUS",
+//   country: "Singapore",
+// }, {
+//   name: "NTU",
+//   country: "Singapore",
+// }, {
+//   name: "MIT",
+//   country: "United States",
+// }, {
+//   name: "CMU",
+//   country: "United States",
+// }];
+//
+// const majors = [{
+//   uniName: "NUS",
+//   majorName: "Data Science and Analytics",
+//   category: "Computing",
+// }, {
+//   uniName: "CMU",
+//   majorName: "Computer Science",
+//   category: "Computing",
+// }];
+//
+// const students = [...Array(2000).keys()].map((i) => ({
+//   studentId: `a${i}`,
+//   gradCap: parseFloat((Math.random() * (5 - 2) + 2).toFixed(1)),
+// }));
+//
+// const applications = [...Array(1440 * 10).keys()].map(() => {
+//   const major = majors[(Math.random() > 0.5) + 0];
+//   return {
+//     studentId: `a${Math.floor(Math.random() * 2000)}`,
+//     majorName: major.majorName,
+//     uniName: major.uniName,
+//     status: "Offered - Accepted",
+//     comment: null,
+//     informant: "allan",
+//     dateInformed: null,
+//   };
+// });
 
-const majors = [{
-  uniName: "NUS",
-  majorName: "Data Science and Analytics",
-  category: "Computing",
-}, {
-  uniName: "CMU",
-  majorName: "Computer Science",
-  category: "Computing",
-}];
+const applicationsRaw = require("./applications.json");
 
-const students = [...Array(2000).keys()].map((i) => ({
-  studentId: `a${i}`,
-  gradCap: parseFloat((Math.random() * (5 - 2) + 2).toFixed(1)),
+const universitiesList = new Set(applicationsRaw.map((app) => app.uni));
+const universities = Array.from(universitiesList).map((uni) => ({
+  name: uni,
+  country: "Unknown",
+}));
+const students = Object.entries(require("./students.json")).map((a) => ({
+  studentId: a[0],
+  gradCap: a[1].cap,
 }));
 
-const applications = [...Array(1440 * 10).keys()].map(() => {
-  const major = majors[(Math.random() > 0.5) + 0];
+const majorsRaw = require("./majors.json");
+
+const majorsSet = new Set();
+
+const majorEntries = Object.entries(majorsRaw);
+
+const applications = applicationsRaw.map((a) => {
+  const majorNameIndex = majorEntries.findIndex((major) => major[1] === a.major);
+  const majorName = majorEntries[majorNameIndex][0];
+  majorsSet.add(JSON.stringify({
+    majorName,
+    category: "Unknown",
+    uniName: a.uni,
+  }));
   return {
-    studentId: `a${Math.floor(Math.random() * 2000)}`,
-    majorName: major.majorName,
-    uniName: major.uniName,
-    status: "Offered - Accepted",
-    comment: null,
-    informant: "allan",
-    dateInformed: null,
+    studentId: a.student,
+    uniName: a.uni,
+    comment: a.comment,
+    status: a.status.mainStatus + a.status.suppStatus,
+    majorId: majorNameIndex + 1,
+    informant: a.informant,
+    dateInformed: null, // a.dateInformed.length === 0 ? null : a.dateInformed,
   };
 });
+
+const majors = Array.from(majorsSet).map((a) => JSON.parse(a));
 
 require("debug").log(`Tables will be dropped before loading data.
 All existing data will be lost.
