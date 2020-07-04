@@ -23,7 +23,7 @@ module.exports = async function verifyToken(token) {
           audience: clientId,
         };
         const result = verify(token, signingKey, options);
-        if (!(result.iss === "https://sts.windows.net/d72a7172-d5f8-4889-9a85-d7424751592a/")) {
+        if (result.iss !== "https://sts.windows.net/d72a7172-d5f8-4889-9a85-d7424751592a/") {
           return reject(new Error("Token issuer invalid"));
         }
         return resolve(result);

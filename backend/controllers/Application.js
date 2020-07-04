@@ -8,7 +8,7 @@ Student.sync()
   .then(() => Major.sync())
   .then(() => ApplicationTable.sync());
 module.exports = {
-  async getApplicationsAllData({ offset, limit }) {
+  async getApplicationsAllData({ offset, limit }, conditions) {
     const { count, rows } = await ApplicationTable.findAndCountAll({
       order: ["id"],
       include: [{
@@ -22,6 +22,7 @@ module.exports = {
       offset,
       limit,
       attributes: { exclude: ["studentId", "uniName", "majorId"] },
+      where: conditions,
     });
     return {
       data: rows,
@@ -30,11 +31,12 @@ module.exports = {
     };
   },
 
-  async getApplications({ offset, limit }) {
+  async getApplications({ offset, limit }, conditions) {
     const { count, rows } = await ApplicationTable.findAndCountAll({
       order: ["id"],
       offset,
       limit,
+      where: conditions,
     });
     return {
       data: rows,
@@ -42,12 +44,13 @@ module.exports = {
       count,
     };
   },
-  async getApplicationsBasic({ offset, limit }) {
+  async getApplicationsBasic({ offset, limit }, conditions) {
     const { count, rows } = await ApplicationTable.findAndCountAll({
       order: ["id"],
       offset,
       limit,
       attributes: { exclude: ["informant", "dateInformed", "comment"] },
+      where: conditions,
     });
     return {
       data: rows,

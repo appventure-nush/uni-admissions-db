@@ -3,6 +3,7 @@ const { ApplicationsController, UniversitiesController, MajorsController } = req
 
 const router = express.Router();
 const pagination = require("../utils/pagination");
+const filtering = require("../utils/filtering");
 const pretty = require("../utils/pretty");
 
 router.get("/", (req, res) => {
@@ -11,18 +12,18 @@ router.get("/", (req, res) => {
 
 router.get("/api/admin/applications/full", async (req, res) => {
   const applications = await ApplicationsController
-    .getApplicationsAllData(pagination.parseParams(req));
+    .getApplicationsAllData(pagination.parseParams(req), filtering.parseParams(req));
   pretty(req, res, applications);
 });
 
 router.get("/api/applications", async (req, res) => {
-  const applications = await ApplicationsController.getApplications(pagination.parseParams(req));
+  const applications = await ApplicationsController.getApplications(pagination.parseParams(req), filtering.parseParams(req));
   pretty(req, res, applications);
 });
 
 router.get("/api/applications/basic", async (req, res) => {
   const applications = await ApplicationsController
-    .getApplicationsBasic(pagination.parseParams(req));
+    .getApplicationsBasic(pagination.parseParams(req), filtering.parseParams(req));
   pretty(req, res, applications);
 });
 
