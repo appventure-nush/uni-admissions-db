@@ -64,6 +64,7 @@ const applications = applicationsRaw.map((a) => {
   const majorNameIndex = majorEntries.findIndex((major) => major[1] === a.major);
   const majorName = majorEntries[majorNameIndex][0];
   majorsSet.add(JSON.stringify({
+    majorNameIndex: a.major,
     majorName,
     category: "Unknown",
     uniId: a.uniId,
@@ -73,13 +74,25 @@ const applications = applicationsRaw.map((a) => {
     uniId: a.uniId,
     comment: a.comment,
     status: a.status.mainStatus + a.status.suppStatus,
-    majorId: majorNameIndex + 1,
+    majorId: a.major,
     informant: a.informant,
     dateInformed: null, // a.dateInformed.length === 0 ? null : a.dateInformed,
   };
 });
 
-const majors = Array.from(majorsSet).map((a) => JSON.parse(a));
+let majors = Array.from(majorsSet).map((a) => JSON.parse(a));
+
+for (const application of applications) {
+  application.majorId = majors.findIndex((major) => major.majorNameIndex === application.majorId
+      && major.uniId === application.uniId) + 1;
+}
+let i = 1;
+majors = majors.map((major) => {
+  major.majorId = i;
+  delete major.majorNameIndex;
+  i += 1;
+  return major;
+});
 
 require("debug").log(`Tables will be dropped before loading data.
 All existing data will be lost.
