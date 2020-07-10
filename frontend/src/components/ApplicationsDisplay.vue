@@ -96,13 +96,13 @@ export default {
         || this.majors.length === 0) return [];
       return this.fetchedData.map((item) => {
         const major = this.majors[item.majorId - 1];
-        const university = this.universities.find((uni) => uni.uniName === item.uniName);
+        const university = this.universities[item.uniId - 1];
         return {
           id: item.id,
           studentId: item.studentId,
           majorName: major.majorName,
           category: major.category,
-          uniName: item.uniName,
+          uniName: university.uniName,
           country: university.country,
           status: item.status,
         };
