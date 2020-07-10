@@ -22,11 +22,11 @@ const Application = sequelize.define("application", {
     },
     allowNull: false,
   },
-  uniName: {
-    type: Sequelize.STRING,
+  uniId: {
+    type: Sequelize.INTEGER,
     references: {
       model: "universities",
-      key: "uniName",
+      key: "uniId",
     },
     allowNull: false,
   },
@@ -44,7 +44,7 @@ const Application = sequelize.define("application", {
     type: Sequelize.TEXT,
   },
 });
-Application.University = Application.belongsTo(University, { foreignKey: "uniName", allowNull: false });
+Application.University = Application.belongsTo(University, { foreignKey: "uniId", allowNull: false });
 Application.Major = Application.belongsTo(Major, { foreignKey: "majorId", allowNull: false });
 Application.Student = Application.belongsTo(Student, { foreignKey: "studentId", allowNull: false });
 

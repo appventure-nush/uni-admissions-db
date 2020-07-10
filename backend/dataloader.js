@@ -42,9 +42,11 @@
 
 const applicationsRaw = require("./applications.json");
 
-const universitiesList = new Set(applicationsRaw.map((app) => app.uni));
-const universities = Array.from(universitiesList).map((uni) => ({
-  name: uni,
+const universitiesList = require("./universities.json");
+
+const universities = universitiesList.map((uni) => ({
+  id: uni.id,
+  name: uni.displayName,
   country: "Unknown",
 }));
 const students = Object.entries(require("./students.json")).map((a) => ({
@@ -64,11 +66,11 @@ const applications = applicationsRaw.map((a) => {
   majorsSet.add(JSON.stringify({
     majorName,
     category: "Unknown",
-    uniName: a.uni,
+    uniId: a.uniId,
   }));
   return {
     studentId: a.student,
-    uniName: a.uni,
+    uniId: a.uniId,
     comment: a.comment,
     status: a.status.mainStatus + a.status.suppStatus,
     majorId: majorNameIndex + 1,
@@ -106,6 +108,7 @@ setTimeout(async () => {
   await Application.sync({ force: true });
 
   await UniversityTable.bulkCreate(universities.map((university) => ({
+    id: university.id,
     uniName: university.name,
     country: university.country,
   })));

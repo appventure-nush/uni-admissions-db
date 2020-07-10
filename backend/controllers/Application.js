@@ -13,15 +13,16 @@ module.exports = {
       order: ["id"],
       include: [{
         model: Major,
-        attributes: { exclude: ["majorId", "uniName"] },
+        attributes: { exclude: ["majorId", "uniId"] },
       }, {
         model: Student,
       }, {
         model: University,
+        attributes: { exclude: ["uniId"] },
       }],
       offset,
       limit,
-      attributes: { exclude: ["studentId", "uniName", "majorId"] },
+      attributes: { exclude: ["studentId", "uniId", "majorId"] },
       where: conditions,
     });
     return {
