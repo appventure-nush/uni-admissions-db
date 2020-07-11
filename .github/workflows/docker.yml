@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+
 jobs:
   build:
 
@@ -19,6 +20,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: |
+          cd frontend
+          npm ci
+          npm run build
+          mv dist ../backend/public
       - name: Push image to AppVenture registry
         uses: docker/build-push-action@v1
         with:
