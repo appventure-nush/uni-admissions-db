@@ -24,7 +24,8 @@ export default {
   name: "ApplicationsDisplay",
   data() {
     return {
-      endpoint: "https://uni-db.chatbox2.ml",
+      // eslint-disable-next-line no-restricted-globals
+      endpoint: location.hostname === "localhost" ? "https://uni-db.chatbox2.ml" : location.origin,
       headers: [
         {
           text: "ID",
