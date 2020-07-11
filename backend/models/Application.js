@@ -14,19 +14,19 @@ const Application = sequelize.define("application", {
     },
     allowNull: false,
   },
-  majorName: {
-    type: Sequelize.STRING,
+  majorId: {
+    type: Sequelize.INTEGER,
     references: {
       model: "majors",
-      key: "majorName",
+      key: "majorId",
     },
     allowNull: false,
   },
-  uniName: {
-    type: Sequelize.STRING,
+  uniId: {
+    type: Sequelize.INTEGER,
     references: {
       model: "universities",
-      key: "uniName",
+      key: "uniId",
     },
     allowNull: false,
   },
@@ -41,11 +41,11 @@ const Application = sequelize.define("application", {
     type: Sequelize.TIME,
   },
   comment: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
   },
 });
-Application.University = Application.belongsTo(University, { foreignKey: "uniName", allowNull: false });
-Application.Major = Application.belongsTo(Major, { foreignKey: "majorName", allowNull: false });
+Application.University = Application.belongsTo(University, { foreignKey: "uniId", allowNull: false });
+Application.Major = Application.belongsTo(Major, { foreignKey: "majorId", allowNull: false });
 Application.Student = Application.belongsTo(Student, { foreignKey: "studentId", allowNull: false });
 
 module.exports = Application;

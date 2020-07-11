@@ -8,20 +8,56 @@ Student.sync()
   .then(() => Major.sync())
   .then(() => ApplicationTable.sync());
 module.exports = {
-  async getApplicationsAllData() {
-    return ApplicationTable.findAll({
+  async getApplicationsAllData({ offset, limit }, conditions) {
+    const { count, rows } = await ApplicationTable.findAndCountAll({
+      order: ["id"],
       include: [{
         model: Major,
+        attributes: { exclude: ["majorId", "uniId"] },
       }, {
         model: Student,
       }, {
         model: University,
+        attributes: { exclude: ["uniId"] },
       }],
+      offset,
+      limit,
+      attributes: { exclude: ["studentId", "uniId", "majorId"] },
+      where: conditions,
     });
+    return {
+      data: rows,
+      offset,
+      count,
+    };
   },
 
-  async getApplications() {
-    return ApplicationTable.findAll();
+  async getApplications({ offset, limit }, conditions) {
+    const { count, rows } = await ApplicationTable.findAndCountAll({
+      order: ["id"],
+      offset,
+      limit,
+      where: conditions,
+    });
+    return {
+      data: rows,
+      offset,
+      count,
+    };
+  },
+  async getApplicationsBasic({ offset, limit }, conditions) {
+    const { count, rows } = await ApplicationTable.findAndCountAll({
+      order: ["id"],
+      offset,
+      limit,
+      attributes: { exclude: ["informant", "dateInformed", "comment"] },
+      where: conditions,
+    });
+    return {
+      data: rows,
+      offset,
+      count,
+    };
   },
 
   async getAverageCap() {

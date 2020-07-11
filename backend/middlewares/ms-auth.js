@@ -15,10 +15,10 @@ module.exports = (adminOnly) => async (req, res, next) => {
   if (adminOnly) {
     if (config.ADMIN_EMAILS.includes(decodedToken.unique_name)) {
       next();
-    } else {
-      res.status(403).end("Insufficient permission to perform action");
       return;
     }
+    res.status(403).end("Insufficient permission to perform action");
+    return;
   }
   next();
 };
