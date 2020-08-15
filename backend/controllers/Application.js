@@ -77,4 +77,7 @@ module.exports = {
     const sum = Array.from(students.values()).reduce((a, b) => a + parseFloat(b), 0);
     return sum / students.size;
   },
+  async createApplication(application) {
+    return ApplicationTable.create(application);
+  },
 };
