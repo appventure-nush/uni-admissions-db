@@ -1,11 +1,16 @@
-const express = require("express");
-const { ApplicationsController, UniversitiesController, MajorsController } = require("../controllers/index");
+import express = require("express");
+
+import ApplicationsController from "../controllers/Application";
+import MajorsController from "../controllers/Major";
+import UniversitiesController from "../controllers/University";
+
+import pagination from "../utils/pagination";
+
+import filtering from "../utils/filtering";
+
+import pretty from "../utils/pretty";
 
 const router = express.Router();
-const pagination = require("../utils/pagination");
-const filtering = require("../utils/filtering");
-const pretty = require("../utils/pretty");
-
 router.get("/", (req, res) => {
   res.end("Hello, world");
 });
@@ -41,4 +46,4 @@ router.get("/api/majors", async (req, res) => {
   const majors = await MajorsController.getMajors();
   pretty(req, res, majors);
 });
-module.exports = router;
+export default router;

@@ -1,14 +1,19 @@
-const ApplicationTable = require("../models/Application");
-const Major = require("../models/Major");
-const Student = require("../models/Student");
-const University = require("../models/University");
+import Major from "../models/Major";
+
+import Student from "../models/Student";
+
+import University from "../models/University";
+
+import ApplicationTable, {ApplicationAttributes} from "../models/Application";
+import Application from "../models/Application";
+import {WhereOptions} from "sequelize/types/lib/model";
 
 Student.sync()
   .then(() => University.sync())
   .then(() => Major.sync())
   .then(() => ApplicationTable.sync());
-module.exports = {
-  async getApplicationsAllData({ offset, limit }, conditions) {
+export default {
+  async getApplicationsAllData({ offset, limit }: {offset: number, limit: number}, conditions: WhereOptions<Application> | undefined) {
     const { count, rows } = await ApplicationTable.findAndCountAll({
       order: ["id"],
       include: [{
@@ -32,7 +37,7 @@ module.exports = {
     };
   },
 
-  async getApplications({ offset, limit }, conditions) {
+  async getApplications({ offset, limit }: {offset: number, limit: number}, conditions: WhereOptions<Application> | undefined) {
     const { count, rows } = await ApplicationTable.findAndCountAll({
       order: ["id"],
       offset,
@@ -45,7 +50,7 @@ module.exports = {
       count,
     };
   },
-  async getApplicationsBasic({ offset, limit }, conditions) {
+  async getApplicationsBasic({ offset, limit }: {offset: number, limit: number}, conditions: WhereOptions<Application> | undefined) {
     const { count, rows } = await ApplicationTable.findAndCountAll({
       order: ["id"],
       offset,
@@ -70,14 +75,18 @@ module.exports = {
         model: Student,
         attributes: ["gradCap"],
       }],
-    });
+    }) as Array<Application & {
+      student:{
+        gradCap: number
+      }
+    }>;
     data.forEach((d) => {
       students.set(d.studentId, d.student.gradCap);
     });
     const sum = Array.from(students.values()).reduce((a, b) => a + parseFloat(b), 0);
     return sum / students.size;
   },
-  async createApplication(application) {
+  async createApplication(application: ApplicationAttributes) {
     return ApplicationTable.create(application);
   },
 };

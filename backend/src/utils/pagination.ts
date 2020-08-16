@@ -1,4 +1,5 @@
-module.exports = {
+export default {
+  // @ts-ignore
   parseParams(req) {
     let { offset, limit } = req.query;
     if (!offset) offset = 0;

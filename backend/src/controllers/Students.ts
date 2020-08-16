@@ -1,7 +1,7 @@
-const Student = require("../models/Student");
+import Student from "../models/Student";
 
-module.exports = {
-  async getStudentById(id) {
+export default {
+  async getStudentById(id: string) {
     return Student.findOne({
       where: {
         studentId: id,
@@ -9,7 +9,7 @@ module.exports = {
     });
   },
 
-  async addStudent(student) {
+  async addStudent(student: Student) {
     return Student.create(student);
   },
 };

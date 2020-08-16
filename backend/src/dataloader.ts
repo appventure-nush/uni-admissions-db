@@ -40,21 +40,40 @@
 //   };
 // });
 
-const applicationsRaw = require("./applications.json");
+class ApplicationsRaw {
+  public student!: string;
+  public major!: number;
+  public comment!: string;
+  public status!: {
+    mainStatus: string,
+    suppStatus: string
+  }
+  public informant!: string;
+  public dateInformed!: string;
+  public uniId!: number
+}
 
-const universitiesList = require("./universities.json");
+const applicationsRaw = require("../applications.json") as Array<ApplicationsRaw>;
+
+const universitiesList =
+  require("../universities.json") as Array<{
+  id: number,
+  displayName: string
+}>;
 
 const universities = universitiesList.map((uni) => ({
   id: uni.id,
   name: uni.displayName,
   country: "Unknown",
 }));
-const students = Object.entries(require("./students.json")).map((a) => ({
+const students = Object.entries(require("../students.json") as Map<string,{
+  cap: number
+}>).map((a) => ({
   studentId: a[0],
   gradCap: a[1].cap,
 }));
 
-const majorsRaw = require("./majors.json");
+const majorsRaw = require("../majors.json") as Map<String,number>;
 
 const majorsSet = new Set();
 
@@ -80,7 +99,14 @@ const applications = applicationsRaw.map((a) => {
   };
 });
 
-let majors = Array.from(majorsSet).map((a) => JSON.parse(a));
+// @ts-ignore
+let majors = Array.from(majorsSet).map((a: string) => JSON.parse(a)) as Array<{
+  majorNameIndex: number,
+  majorName: String,
+  category: String,
+  uniId: number,
+  majorId? : number
+}>;
 
 for (const application of applications) {
   application.majorId = majors.findIndex((major) => major.majorNameIndex === application.majorId
@@ -105,7 +131,7 @@ setTimeout(async () => {
   // eslint-disable-next-line global-require
   const Student = require("./models/Student");
   // eslint-disable-next-line global-require
-  const sequelize = require("./models/index");
+  const sequelize = require("./models");
 
   await UniversityTable.sync({ force: true });
   await Student.sync({ force: true });

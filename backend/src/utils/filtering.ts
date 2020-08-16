@@ -1,9 +1,10 @@
-module.exports = {
+export default {
+  // @ts-ignore
   parseParams(req) {
     const { uni, country } = req.query;
-    if (uni) {
+    if (uni && parseInt(uni)) {
       return {
-        uniName: uni,
+        uniId: uni,
       };
     }
     if (country) {
@@ -11,6 +12,6 @@ module.exports = {
         country,
       };
     }
-    return null;
+    return undefined;
   },
 };

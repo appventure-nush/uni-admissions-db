@@ -62,4 +62,6 @@ typings/
 
 *.json
 !example.config.json
+!tsconfig.json
 public
+build

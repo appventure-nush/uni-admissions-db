@@ -8,3 +8,4 @@ COPY --chown=uni-admissions-db:root . .
 WORKDIR backend
 
 RUN npm ci --production
+RUN npm build

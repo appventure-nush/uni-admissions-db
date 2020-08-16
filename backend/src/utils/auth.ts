@@ -1,12 +1,13 @@
-const jwksClient = require("jwks-rsa");
+import jwksClient = require("jwks-rsa");
+
 const verify = require("jsonwebtoken/verify");
-const { MS_CLIENT_ID: clientId } = require("../config");
+const {MS_CLIENT_ID: clientId} = require("../../config");
 
 // https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=ad4c43c7-eaff-45f7-b7b4-fedc6bcb85ca&redirect_uri=http://localhost:3000&response_type=id_token&nonce=iwanttodie
-module.exports = async function verifyToken(token) {
+export default async function verifyToken(token: string) {
   // Node has no atob
-  const atob = (base64) => Buffer.from(base64, "base64").toString("ascii");
-  const { kid } = JSON.parse(atob(token.split(".")[0]));
+  const atob = (base64: string) => Buffer.from(base64, "base64").toString("ascii");
+  const {kid} = JSON.parse(atob(token.split(".")[0]));
   const client = jwksClient({
     cache: true,
     jwksUri: "https://login.microsoftonline.com/common/discovery/keys",
@@ -15,7 +16,7 @@ module.exports = async function verifyToken(token) {
     client.getSigningKey(kid, async (err, key) => {
       if (err) return reject(err);
       try {
-        const signingKey = key.publicKey || key.rsaPublicKey;
+        const signingKey = key.getPublicKey()
         const options = {
           algorithms: ["RS256"],
           ignoreExpiration: true,
