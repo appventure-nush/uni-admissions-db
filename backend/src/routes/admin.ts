@@ -1,7 +1,9 @@
-const express = require("express");
-const {
-  ApplicationsController, UniversitiesController, MajorsController, StudentsController,
-} = require("../controllers/index");
+import express = require("express");
+
+import ApplicationsController from "../controllers/Application";
+import MajorsController from "../controllers/Major";
+import StudentsController from "../controllers/Students";
+import UniversitiesController from "../controllers/University";
 
 const router = express.Router();
 
@@ -91,4 +93,4 @@ router.post("/api/admin/students/create", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,11 +1,11 @@
-const Major = require("../models/Major");
+import Major from "../models/Major";
 
-module.exports = {
+export default {
   async getMajors() {
     return Major.findAll();
   },
 
-  async getMajorById(id) {
+  async getMajorById(id: number) {
     return Major.findOne({
       where: {
         majorId: id,
