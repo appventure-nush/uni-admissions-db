@@ -19,8 +19,14 @@
   </v-container>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from "vue";
+import { DataTableHeader, DataOptions } from "vuetify";
+import Application from "../types/application";
+import Major from "../types/major";
+import University from "../types/university";
+
+export default Vue.extend({
   name: "ApplicationsDisplay",
   data() {
     return {
@@ -63,14 +69,14 @@ export default {
           value: "status",
           sortable: false,
         },
-      ],
+      ] as Array<DataTableHeader>,
       loading: true,
       totalItems: 0,
-      options: {},
+      options: {} as DataOptions,
       fetchError: false,
-      fetchedData: [],
-      majors: [],
-      universities: [],
+      fetchedData: [] as Array<Application>,
+      majors: [] as Array<Major>,
+      universities: [] as Array<University>,
     };
   },
   watch: {
@@ -95,7 +101,7 @@ export default {
     parsedData() {
       if (this.totalItems === 0 || this.universities.length === 0
         || this.majors.length === 0) return [];
-      return this.fetchedData.map((item) => {
+      return this.$data.fetchedData.map((item: Application) => {
         const major = this.majors[item.majorId - 1];
         const university = this.universities[item.uniId - 1];
         return {
@@ -178,5 +184,5 @@ export default {
         });
     },
   },
-};
+});
 </script>

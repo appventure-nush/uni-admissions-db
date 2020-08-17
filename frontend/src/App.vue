@@ -65,9 +65,12 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
+import User from "./types/user";
+
 const clientId = "ad4c43c7-eaff-45f7-b7b4-fedc6bcb85ca";
-export default {
+export default Vue.extend({
   name: "App",
   components: {},
   data: () => ({
@@ -75,11 +78,15 @@ export default {
     user: {
       name: "",
       email: "",
-    },
+    } as User,
     drawerShown: false,
   }),
   computed: {
-    routes() {
+    routes(): Array<{
+      name: string,
+      route: string,
+      icon: string
+    }> {
       return [
         {
           name: "View applications",
@@ -97,15 +104,14 @@ export default {
     handleLogin() {
       // Generic MS Auth code
       // eslint-disable-next-line no-restricted-globals
-      const hashParams = new Map(location.hash.substring(1)
+      const hashParams = new Map<string, string>(location.hash.substring(1)
         .split("&")
         .map((a) => a.split("=")
-          .map((b) => b.replace("/", ""))));
-      let code = hashParams.get("id_token");
-      const cookies = new Map(document.cookie.split(" ")
-        .map((a) => a.split("=")));
-      code = code || cookies.get("token");
-      if (!code || !code.includes(".") || code.match(/\./g).length !== 2) return;
+          .map((b) => b.replace("/", ""))) as [string, string][]);
+      const cookies = new Map<string, string>(document.cookie.split(" ")
+        .map((a) => a.split("=")) as [string, string][]);
+      const code = hashParams.get("id_token") || cookies.get("token");
+      if (!code?.includes(".") || code?.match(/\./g)?.length !== 2) return;
       const [, claimsString] = code.split(".");
       const claims = JSON.parse(atob(claimsString));
       this.user = {
@@ -126,5 +132,5 @@ export default {
   mounted() {
     this.handleLogin();
   },
-};
+});
 </script>
