@@ -1,10 +1,10 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
+import VueRouter, {RouteConfig} from "vue-router";
 import ApplicationsDisplay from "../components/ApplicationsDisplay.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
+const routes : Array<RouteConfig> = [
   {
     path: "/",
     component: ApplicationsDisplay,
