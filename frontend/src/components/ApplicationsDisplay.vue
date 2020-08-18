@@ -21,10 +21,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { DataTableHeader, DataOptions } from "vuetify";
-import Application from "../types/application";
+import {DataOptions, DataTableHeader} from "vuetify";
+import Application, {ApplicationTableRow} from "../types/application";
 import Major from "../types/major";
 import University from "../types/university";
+import Paginated from "@/types/paginated";
 
 export default Vue.extend({
   name: "ApplicationsDisplay",
@@ -42,32 +43,26 @@ export default Vue.extend({
         {
           text: "Student Id",
           value: "studentId",
-          sortable: false,
         },
         {
           text: "Major Name",
           value: "majorName",
-          sortable: false,
         },
         {
           text: "Major Category",
           value: "category",
-          sortable: false,
         },
         {
           text: "University Name",
           value: "uniName",
-          sortable: false,
         },
         {
           text: "Country",
           value: "country",
-          sortable: false,
         },
         {
           text: "Status",
           value: "status",
-          sortable: false,
         },
       ] as Array<DataTableHeader>,
       loading: true,
@@ -83,14 +78,14 @@ export default Vue.extend({
     // Watch for pagination changes
     options: {
       handler() {
-        this.fetchData().then((data) => {
+        this.fetchData().then((data: Paginated<Application>) => {
           this.fetchedData = data.data;
           this.totalItems = data.count;
         });
-        this.fetchUniversities().then((data) => {
+        this.fetchUniversities().then((data: University[]) => {
           this.universities = data;
         });
-        this.fetchMajors().then((data) => {
+        this.fetchMajors().then((data: Major[]) => {
           this.majors = data;
         });
       },
@@ -98,7 +93,7 @@ export default Vue.extend({
     },
   },
   computed: {
-    parsedData() {
+    parsedData(): ApplicationTableRow[] {
       if (this.totalItems === 0 || this.universities.length === 0
         || this.majors.length === 0) return [];
       return this.$data.fetchedData.map((item: Application) => {
@@ -123,9 +118,10 @@ export default Vue.extend({
     });
   },
   methods: {
-    async fetchData() {
+    async fetchData(): Promise<Paginated<Application>> {
       this.loading = true;
-      const { page, itemsPerPage } = this.options;
+      const {page, itemsPerPage, sortBy, sortDesc} = this.options;
+      console.log(sortDesc, sortBy)
       const queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
       return fetch(`${this.endpoint}/api/applications?${queryString}`, {
         credentials: "include",
@@ -145,7 +141,7 @@ export default Vue.extend({
           return null;
         });
     },
-    async fetchMajors() {
+    async fetchMajors(): Promise<Major[]> {
       return fetch(`${this.endpoint}/api/majors`, {
         credentials: "include",
       })
@@ -164,7 +160,7 @@ export default Vue.extend({
           return null;
         });
     },
-    async fetchUniversities() {
+    async fetchUniversities(): Promise<University[]> {
       return fetch(`${this.endpoint}/api/universities`, {
         credentials: "include",
       })
