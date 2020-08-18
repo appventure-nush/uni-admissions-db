@@ -8,3 +8,13 @@ export default interface Application {
   dateInformed: string | null,
   comment: string
 }
+
+export interface ApplicationTableRow {
+  id: number,
+  studentId: string,
+  majorName: string,
+  category: string,
+  uniName: string,
+  country: string,
+  status: string,
+}
