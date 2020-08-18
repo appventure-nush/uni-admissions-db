@@ -4,30 +4,32 @@ import Student from "../models/Student";
 
 import University from "../models/University";
 
-import ApplicationTable, {ApplicationAttributes} from "../models/Application";
-import Application from "../models/Application";
-import {WhereOptions} from "sequelize/types/lib/model";
+import ApplicationTable from "../models/Application";
+import Application, {ApplicationAttributes} from "../models/Application";
+import {Order, WhereOptions} from "sequelize/types/lib/model";
 
 Student.sync()
   .then(() => University.sync())
   .then(() => Major.sync())
   .then(() => ApplicationTable.sync());
 export default {
-  async getApplicationsAllData({ offset, limit }: {offset: number, limit: number}, conditions: WhereOptions<Application> | undefined) {
-    const { count, rows } = await ApplicationTable.findAndCountAll({
-      order: ["id"],
+  async getApplicationsAllData({offset, limit}: { offset: number, limit: number },
+                               conditions: WhereOptions<Application> | undefined,
+                               sortParams: Order | undefined) {
+    const {count, rows} = await ApplicationTable.findAndCountAll({
+      order: sortParams,
       include: [{
         model: Major,
-        attributes: { exclude: ["majorId", "uniId"] },
+        attributes: {exclude: ["majorId", "uniId"]},
       }, {
         model: Student,
       }, {
         model: University,
-        attributes: { exclude: ["uniId"] },
+        attributes: {exclude: ["uniId"]},
       }],
       offset,
       limit,
-      attributes: { exclude: ["studentId", "uniId", "majorId"] },
+      attributes: {exclude: ["studentId", "uniId", "majorId"]},
       where: conditions,
     });
     return {
@@ -37,9 +39,11 @@ export default {
     };
   },
 
-  async getApplications({ offset, limit }: {offset: number, limit: number}, conditions: WhereOptions<Application> | undefined) {
-    const { count, rows } = await ApplicationTable.findAndCountAll({
-      order: ["id"],
+  async getApplications({offset, limit}: { offset: number, limit: number },
+                        conditions: WhereOptions<Application> | undefined,
+                        sortParams: Order | undefined) {
+    const {count, rows} = await ApplicationTable.findAndCountAll({
+      order: sortParams,
       offset,
       limit,
       where: conditions,
@@ -50,12 +54,14 @@ export default {
       count,
     };
   },
-  async getApplicationsBasic({ offset, limit }: {offset: number, limit: number}, conditions: WhereOptions<Application> | undefined) {
-    const { count, rows } = await ApplicationTable.findAndCountAll({
-      order: ["id"],
+  async getApplicationsBasic({offset, limit}: { offset: number, limit: number },
+                             conditions: WhereOptions<Application> | undefined,
+                             sortParams: Order | undefined) {
+    const {count, rows} = await ApplicationTable.findAndCountAll({
+      order: sortParams,
       offset,
       limit,
-      attributes: { exclude: ["informant", "dateInformed", "comment"] },
+      attributes: {exclude: ["informant", "dateInformed", "comment"]},
       where: conditions,
     });
     return {
@@ -76,7 +82,7 @@ export default {
         attributes: ["gradCap"],
       }],
     }) as Array<Application & {
-      student:{
+      student: {
         gradCap: number
       }
     }>;

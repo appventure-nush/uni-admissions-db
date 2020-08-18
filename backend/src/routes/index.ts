@@ -9,6 +9,7 @@ import pagination from "../utils/pagination";
 import filtering from "../utils/filtering";
 
 import pretty from "../utils/pretty";
+import sorting from "../utils/sorting";
 
 const router = express.Router();
 router.get("/", (req, res) => {
@@ -17,18 +18,28 @@ router.get("/", (req, res) => {
 
 router.get("/api/admin/applications/full", async (req, res) => {
   const applications = await ApplicationsController
-    .getApplicationsAllData(pagination.parseParams(req), filtering.parseParams(req));
+    .getApplicationsAllData(
+      pagination.parseParams(req),
+      filtering.parseParams(req),
+      sorting.parseParams(req));
   pretty(req, res, applications);
 });
 
 router.get("/api/applications", async (req, res) => {
-  const applications = await ApplicationsController.getApplications(pagination.parseParams(req), filtering.parseParams(req));
+  const applications = await ApplicationsController.getApplications(
+    pagination.parseParams(req),
+    filtering.parseParams(req),
+    sorting.parseParams(req)
+  );
   pretty(req, res, applications);
 });
 
 router.get("/api/applications/basic", async (req, res) => {
   const applications = await ApplicationsController
-    .getApplicationsBasic(pagination.parseParams(req), filtering.parseParams(req));
+    .getApplicationsBasic(
+      pagination.parseParams(req),
+      filtering.parseParams(req),
+      sorting.parseParams(req));
   pretty(req, res, applications);
 });
 
