@@ -122,7 +122,9 @@ export default Vue.extend({
       this.loading = true;
       const {page, itemsPerPage, sortBy, sortDesc} = this.options;
       console.log(sortDesc, sortBy)
-      const queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+      var queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+      if (sortDesc.length == 1) queryString += `&sortBy=${sortBy[0]}&sortDesc=${sortDesc[0]}`
+      console.log(queryString)
       return fetch(`${this.endpoint}/api/applications?${queryString}`, {
         credentials: "include",
       })
