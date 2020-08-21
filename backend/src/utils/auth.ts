@@ -1,7 +1,9 @@
 import jwksClient = require("jwks-rsa");
 
-const verify = require("jsonwebtoken/verify");
-const {MS_CLIENT_ID: clientId} = require("../../config");
+import {verify, VerifyOptions} from "jsonwebtoken";
+
+import config from "../config";
+
 
 // https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=ad4c43c7-eaff-45f7-b7b4-fedc6bcb85ca&redirect_uri=http://localhost:3000&response_type=id_token&nonce=iwanttodie
 export default async function verifyToken(token: string) {
@@ -17,13 +19,13 @@ export default async function verifyToken(token: string) {
       if (err) return reject(err);
       try {
         const signingKey = key.getPublicKey()
-        const options = {
+        const options: VerifyOptions = {
           algorithms: ["RS256"],
           ignoreExpiration: true,
           maxAge: "1 year",
-          audience: clientId,
+          audience: config.MS_CLIENT_ID,
         };
-        const result = verify(token, signingKey, options);
+        const result: any = verify(token, signingKey, options);
         if (result.iss !== "https://sts.windows.net/d72a7172-d5f8-4889-9a85-d7424751592a/") {
           return reject(new Error("Token issuer invalid"));
         }
