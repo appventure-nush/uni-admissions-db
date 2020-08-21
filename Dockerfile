@@ -7,5 +7,5 @@ WORKDIR /home/uni-admissions-db/uni-admissions-db
 COPY --chown=uni-admissions-db:root . .
 WORKDIR backend
 
-RUN npm ci --production
-RUN npm build
+RUN npm ci
+RUN npm run build
