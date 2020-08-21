@@ -24,7 +24,8 @@ jobs:
           cd frontend
           npm ci
           npm run build
-          mv dist ../backend/public
+          mkdir ../backend/build
+          mv dist ../backend/build/public
       - name: Push image to AppVenture registry
         uses: docker/build-push-action@v1
         with:
