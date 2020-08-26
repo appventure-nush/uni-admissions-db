@@ -1,14 +1,18 @@
 import verify from "../utils/auth";
 
 import config from "../config";
+import * as express from 'express';
 
-export default (adminOnly: boolean) => async (req: any, res: any, next: ()=>any) => {
+export default (adminOnly: boolean) => async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const { token } = req.cookies;
   const decodedToken = (await verify(token)
     .then((decoded) => decoded).catch(
       (error) => {
         console.log(error);
-        res.status(401).end("Invalid token");
+        res
+          .status(401)
+          .clearCookie("token")
+          .end("Invalid token");
         return null;
       },
     )) as {
