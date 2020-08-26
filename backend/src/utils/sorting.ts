@@ -1,15 +1,15 @@
 import {Order} from "sequelize";
+import {Request} from 'express';
 
 export default {
-  // @ts-ignore
-  parseParams(req): Order | undefined {
-    const {sortBy, sortDesc = "false"}: { sortBy: string | undefined, sortDesc: string } = req.query;
+  parseParams(req: Request): Order | undefined {
+    const sortDesc = req.query.sortDesc === undefined ? "false" : req.query.sortDesc;
     const order = sortDesc === "false" ? "ASC": "DESC"
-    if (sortBy == undefined) {
+    if (req.query.sortBy == undefined) {
       return undefined;
     }
     return [
-      [sortBy, order],
+      [String(req.query.sortBy), order],
       ["id", "ASC"]
     ]
   },

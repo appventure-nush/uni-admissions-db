@@ -1,8 +1,9 @@
+import {Request} from 'express';
+
 export default {
-  // @ts-ignore
-  parseParams(req) {
+  parseParams(req: Request) {
     const { uni, country } = req.query;
-    if (uni && parseInt(uni)) {
+    if (uni && parseInt(<string>uni)) {
       return {
         uniId: uni,
       };

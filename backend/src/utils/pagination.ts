@@ -1,12 +1,15 @@
+import {Request} from 'express';
+
 export default {
-  // @ts-ignore
-  parseParams(req) {
-    let { offset, limit } = req.query;
-    if (!offset) offset = 0;
-    if (!limit) limit = 10;
-    offset = parseInt(offset, 10);
-    limit = parseInt(limit, 10);
-    if (limit > 30) limit = 30;
+  parseParams(req: Request) {
+    const { offset, limit } = req.query;
+    let offsetVal = 0
+    let limitVal = 0
+    if (!offset) offsetVal = 0;
+    if (!limit) limitVal = 10;
+    offsetVal = parseInt(String(offsetVal), 10);
+    limitVal = parseInt(String(limitVal), 10);
+    if (limitVal > 30) limitVal = 30;
     return { offset, limit };
   },
 };
