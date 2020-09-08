@@ -7,6 +7,7 @@
       </v-card-title>
 
       <v-data-table
+        :footer-props="{'items-per-page-options': [10,20,30,50]}"
         :headers="headers"
         :items="parsedData"
         :loading="parsedData.length===0"
@@ -23,8 +24,6 @@
 import Vue from "vue";
 import {DataOptions, DataTableHeader} from "vuetify";
 import Application, {ApplicationTableRow} from "../types/application";
-import Major from "../types/major";
-import University from "../types/university";
 import Paginated from "@/types/paginated";
 
 export default Vue.extend({
@@ -70,8 +69,6 @@ export default Vue.extend({
       options: {} as DataOptions,
       fetchError: false,
       fetchedData: [] as Array<Application>,
-      majors: [] as Array<Major>,
-      universities: [] as Array<University>,
     };
   },
   watch: {
@@ -82,30 +79,21 @@ export default Vue.extend({
           this.fetchedData = data.data;
           this.totalItems = data.count;
         });
-        this.fetchUniversities().then((data: University[]) => {
-          this.universities = data;
-        });
-        this.fetchMajors().then((data: Major[]) => {
-          this.majors = data;
-        });
       },
       deep: true,
     },
   },
   computed: {
     parsedData(): ApplicationTableRow[] {
-      if (this.totalItems === 0 || this.universities.length === 0
-        || this.majors.length === 0) return [];
+      if (this.totalItems === 0) return [];
       return this.$data.fetchedData.map((item: Application) => {
-        const major = this.majors[item.majorId - 1];
-        const university = this.universities[item.uniId - 1];
         return {
           id: item.id,
-          studentId: item.studentId,
-          majorName: major.majorName,
-          category: major.category,
-          uniName: university.uniName,
-          country: university.country,
+          studentId: item.Student.studentId,
+          majorName: item.Major.majorName,
+          category: item.Major.category,
+          uniName: item.University.uniName,
+          country: item.University.country,
           status: item.status,
         };
       });
@@ -140,44 +128,6 @@ export default Vue.extend({
         })
         .catch((e) => {
           this.fetchError = e.toString();
-          return null;
-        });
-    },
-    async fetchMajors(): Promise<Major[]> {
-      return fetch(`${this.endpoint}/api/majors`, {
-        credentials: "include",
-      })
-        .then((a) => a.text())
-        .then((text) => {
-          try {
-            this.fetchError = false;
-            return JSON.parse(text);
-          } catch (e) {
-            console.log(e);
-          }
-          return null;
-        })
-        .catch((e) => {
-          console.log(e);
-          return null;
-        });
-    },
-    async fetchUniversities(): Promise<University[]> {
-      return fetch(`${this.endpoint}/api/universities`, {
-        credentials: "include",
-      })
-        .then((a) => a.text())
-        .then((text) => {
-          try {
-            this.fetchError = false;
-            return JSON.parse(text);
-          } catch (e) {
-            console.log(e);
-          }
-          return null;
-        })
-        .catch((e) => {
-          console.log(e);
           return null;
         });
     },
