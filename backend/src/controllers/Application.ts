@@ -13,9 +13,11 @@ Student.sync()
   .then(() => Major.sync())
   .then(() => ApplicationTable.sync());
 export default {
-  async getApplicationsAllData({offset, limit}: { offset: number, limit: number },
-                               conditions: WhereOptions<Application> | undefined,
-                               sortParams: Order | undefined) {
+  async getApplications({offset, limit}: { offset: number, limit: number },
+                        conditions: WhereOptions<Application> | undefined,
+                        sortParams: Order | undefined,
+                        attributes: string[]
+  ) {
     const {count, rows} = await ApplicationTable.findAndCountAll({
       order: sortParams,
       include: [{
@@ -29,39 +31,7 @@ export default {
       }],
       offset,
       limit,
-      attributes: {exclude: ["studentId", "uniId", "majorId"]},
-      where: conditions,
-    });
-    return {
-      data: rows,
-      offset,
-      count,
-    };
-  },
-
-  async getApplications({offset, limit}: { offset: number, limit: number },
-                        conditions: WhereOptions<Application> | undefined,
-                        sortParams: Order | undefined) {
-    const {count, rows} = await ApplicationTable.findAndCountAll({
-      order: sortParams,
-      offset,
-      limit,
-      where: conditions,
-    });
-    return {
-      data: rows,
-      offset,
-      count,
-    };
-  },
-  async getApplicationsBasic({offset, limit}: { offset: number, limit: number },
-                             conditions: WhereOptions<Application> | undefined,
-                             sortParams: Order | undefined) {
-    const {count, rows} = await ApplicationTable.findAndCountAll({
-      order: sortParams,
-      offset,
-      limit,
-      attributes: {exclude: ["informant", "dateInformed", "comment"]},
+      attributes,
       where: conditions,
     });
     return {
