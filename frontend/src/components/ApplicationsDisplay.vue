@@ -4,11 +4,18 @@
       <v-card-title>
         Applications
         <v-spacer/>
+        <v-checkbox
+          class="ma-2"
+          v-for='column in headers.filter(it=> !["id", "studentId", "uniName"].includes(it.value))'
+          v-model="showColumns"
+          :label="column.text"
+          :value="column.value">
+          <v-spacer/>
+        </v-checkbox>
       </v-card-title>
-
       <v-data-table
         :footer-props="{'items-per-page-options': [10,20,30,50]}"
-        :headers="headers"
+        :headers='headers.filter(a=> ["id", "studentId", "uniName", ...showColumns].includes(a.value))'
         :items="parsedData"
         :loading="parsedData.length===0"
         :loading-text="fetchError ? fetchError : 'Loading...'"
@@ -44,6 +51,10 @@ export default Vue.extend({
           value: "studentId",
         },
         {
+          text: "CAP",
+          value: "cap",
+        },
+        {
           text: "Major Name",
           value: "majorName",
         },
@@ -69,6 +80,7 @@ export default Vue.extend({
       options: {} as DataOptions,
       fetchError: false,
       fetchedData: [] as Array<Application>,
+      showColumns: ["id", "studentId", "uniName", "cap", "majorName", "category", "country", "status"],
     };
   },
   watch: {
@@ -77,6 +89,22 @@ export default Vue.extend({
       handler() {
         this.fetchData().then((data: Paginated<Application>) => {
           this.fetchedData = data.data;
+          if (data.data[0].comment !== undefined && !this.headers.map(it => it.value).includes("comment")) {
+            this.headers.push(
+              {
+                text: "Comment",
+                value: "comment",
+              },
+              {
+                text: "Informant",
+                value: "informant",
+              },
+              {
+                text: "Date informed",
+                value: "dateInformed",
+              }
+            )
+          }
           this.totalItems = data.count;
         });
       },
@@ -95,6 +123,10 @@ export default Vue.extend({
           uniName: item.University.uniName,
           country: item.University.country,
           status: item.status,
+          comment: item.comment,
+          dateInformed: item.dateInformed,
+          informant: item.informant,
+          cap: item.Student.gradCap
         };
       });
     },
@@ -109,7 +141,6 @@ export default Vue.extend({
     async fetchData(): Promise<Paginated<Application>> {
       this.loading = true;
       const {page, itemsPerPage, sortBy, sortDesc} = this.options;
-      console.log(sortDesc, sortBy)
       var queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
       if (sortDesc.length == 1) queryString += `&sortBy=${sortBy[0]}&sortDesc=${sortDesc[0]}`
       console.log(queryString)
