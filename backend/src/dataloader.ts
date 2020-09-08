@@ -40,6 +40,20 @@
 //   };
 // });
 
+import UniversityTable from "./models/University";
+
+import Student from "./models/Student";
+
+import sequelize from "./models";
+
+
+// eslint-disable-next-line global-require
+import Major from "./models/Major";
+
+
+// eslint-disable-next-line global-require
+import Application from "./models/Application";
+
 class ApplicationsRaw {
   public student!: string;
   public major!: number;
@@ -57,23 +71,24 @@ const applicationsRaw = require("../applications.json") as Array<ApplicationsRaw
 
 const universitiesList =
   require("../universities.json") as Array<{
-  id: number,
-  displayName: string
-}>;
+    id: number,
+    displayName: string
+    country: string
+  }>;
 
 const universities = universitiesList.map((uni) => ({
   id: uni.id,
   name: uni.displayName,
-  country: "Unknown",
+  country: uni.country
 }));
-const students = Object.entries(require("../students.json") as Map<string,{
+const students = Object.entries(require("../students.json") as Map<string, {
   cap: number
 }>).map((a) => ({
   studentId: a[0],
   gradCap: a[1].cap,
 }));
 
-const majorsRaw = require("../majors.json") as Map<String,number>;
+const majorsRaw = require("../majors.json") as Map<String, number>;
 
 const majorsSet = new Set();
 
@@ -105,12 +120,12 @@ let majors = Array.from(majorsSet).map((a: string) => JSON.parse(a)) as Array<{
   majorName: String,
   category: String,
   uniId: number,
-  majorId? : number
+  majorId?: number
 }>;
 
 for (const application of applications) {
   application.majorId = majors.findIndex((major) => major.majorNameIndex === application.majorId
-      && major.uniId === application.uniId) + 1;
+    && major.uniId === application.uniId) + 1;
 }
 let i = 1;
 majors = majors.map((major) => {
@@ -124,27 +139,12 @@ require("debug").log(`Tables will be dropped before loading data.
 All existing data will be lost.
 You have 10 seconds to kill this process before tables are dropped.
 `);
-
 setTimeout(async () => {
-  // eslint-disable-next-line global-require
-  const UniversityTable = require("./models/University");
-  // eslint-disable-next-line global-require
-  const Student = require("./models/Student");
-  // eslint-disable-next-line global-require
-  const sequelize = require("./models");
 
-  await UniversityTable.sync({ force: true });
-  await Student.sync({ force: true });
-
-  // eslint-disable-next-line global-require
-  const Major = require("./models/Major");
-
-  await Major.sync({ force: true });
-
-  // eslint-disable-next-line global-require
-  const Application = require("./models/Application");
-
-  await Application.sync({ force: true });
+  await UniversityTable.sync({force: true});
+  await Student.sync({force: true});
+  await Major.sync({force: true});
+  await Application.sync({force: true});
 
   await UniversityTable.bulkCreate(universities.map((university) => ({
     id: university.id,
