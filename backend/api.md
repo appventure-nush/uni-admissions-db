@@ -4,8 +4,8 @@
 > HTTP: `GET /api/applications`   
 > Admin required: No  
 
-This endpoint returns a JSON object contain a list of applications.
-The properties returned differ depending on whether the caller is admin.
+This endpoint returns a list of application objects.
+The properties returned differ depending on whether the caller has administrator permissions.
 
 ### Example response
 ```json
