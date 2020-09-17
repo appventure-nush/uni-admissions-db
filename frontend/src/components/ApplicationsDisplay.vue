@@ -52,7 +52,7 @@ export default Vue.extend({
         },
         {
           text: "CAP",
-          value: "cap",
+          value: "gradCap",
         },
         {
           text: "Major Name",
@@ -77,10 +77,12 @@ export default Vue.extend({
       ] as Array<DataTableHeader>,
       loading: true,
       totalItems: 0,
-      options: {} as DataOptions,
+      options: {
+        multiSort: true
+      } as DataOptions,
       fetchError: false,
       fetchedData: [] as Array<Application>,
-      showColumns: ["id", "studentId", "uniName", "cap", "majorName", "category", "country", "status"],
+      showColumns: ["id", "studentId", "uniName", "gradCap", "majorName", "category", "country", "status"],
     };
   },
   watch: {
@@ -126,7 +128,7 @@ export default Vue.extend({
           comment: item.comment,
           dateInformed: item.dateInformed,
           informant: item.informant,
-          cap: item.Student.gradCap
+          gradCap: item.Student.gradCap
         };
       });
     },
@@ -141,9 +143,10 @@ export default Vue.extend({
     async fetchData(): Promise<Paginated<Application>> {
       this.loading = true;
       const {page, itemsPerPage, sortBy, sortDesc} = this.options;
-      var queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
-      if (sortDesc.length == 1) queryString += `&sortBy=${sortBy[0]}&sortDesc=${sortDesc[0]}`
-      console.log(queryString)
+      let queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+      if (sortDesc.length == 1) {
+        queryString += `&sortBy[0][param]=${sortBy}&sortBy[0][order]=${sortDesc[0] ? "desc" : "asc"}`
+      }
       return fetch(`${this.endpoint}/api/applications?${queryString}`, {
         credentials: "include",
       })
