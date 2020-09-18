@@ -98,3 +98,48 @@ Form data:
 ```
 `studentId` must match `/20[0-9]{2}a[0-9]{3}/`  
 `gradCap` must be in the range `[0, 5]`
+
+## Fetching universities
+> HTTP: `GET /api/universities`   
+> Admin required: No
+
+Returns a list of universities  
+Example response:
+```
+[
+  {
+    "uniId": 1,
+    "uniName": "Unknown",
+    "country": "Unknown"
+  },
+  {
+    "uniId": 2,
+    "uniName": "Massachusetts Institute of Technology",
+    "country": "USA"
+  }
+]
+```
+
+## Fetching majors
+> HTTP: `GET /api/majors`   
+> Admin required: No
+
+Returns a list of majors  
+Specify the `uniId` parameter to filter by university ID.   
+Example response:
+```
+[
+  {
+    "majorId": 1,
+    "majorName": "Business Admin (Accountancy) & Communications & New Media",
+    "category": "Unknown",
+    "uniId": 28
+  },
+  {
+    "majorId": 20,
+    "majorName": "Computer Science",
+    "category": "Unknown",
+    "uniId": 28
+  }
+]
+```

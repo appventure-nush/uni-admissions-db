@@ -9,6 +9,8 @@ import filtering from "../utils/filtering";
 import pretty from "../utils/pretty";
 import sorting from "../utils/sorting";
 import {AuthenticatedRequest} from "../types/express";
+import UniversitiesController from "../controllers/University";
+import MajorsController from "../controllers/Major";
 
 const router = express.Router();
 router.get("/", (req, res) => {
@@ -30,6 +32,17 @@ router.get("/api/applications", (req, res, next) => {
     .catch(e => {
       next(e)
     })
+});
+
+router.get("/api/universities", async (req, res) => {
+  const universities = await UniversitiesController.getUniversities();
+  pretty(req, res, universities);
+});
+
+router.get("/api/majors", async (req, res) => {
+  const uniId = req.query.uniId == undefined ? undefined : parseInt(req.query.uniId.toString())
+  const majors = await MajorsController.getMajors(uniId);
+  pretty(req, res, majors);
 });
 
 router.get("/api/applications/avgcap", async (req, res) => {

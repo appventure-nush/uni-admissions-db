@@ -65,3 +65,4 @@ typings/
 !tsconfig.json
 public
 build
+/uploads/
