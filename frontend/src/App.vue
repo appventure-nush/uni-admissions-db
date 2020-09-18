@@ -93,6 +93,11 @@ export default Vue.extend({
           route: "/",
           icon: "mdi-file-table-box",
         },
+        {
+          name: "Create new application",
+          route: "/new-record",
+          icon: "mdi-file-table-box",
+        },
       ];
     },
   },
