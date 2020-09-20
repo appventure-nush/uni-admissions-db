@@ -146,6 +146,10 @@ export default Vue.extend({
       let queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
       if (sortDesc.length == 1) {
         queryString += `&sortBy[0][param]=${sortBy}&sortBy[0][order]=${sortDesc[0] ? "desc" : "asc"}`
+      } else {
+        for (var i = 0; i < sortDesc.length; i++){
+          queryString += `&sortBy[${i}][param]=${sortBy[i]}&sortBy[${i}][order]=${sortDesc[i] ? "desc" : "asc"}`
+        }
       }
       return fetch(`${this.endpoint}/api/applications?${queryString}`, {
         credentials: "include",
