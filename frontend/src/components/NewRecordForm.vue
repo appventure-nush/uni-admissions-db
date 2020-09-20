@@ -9,7 +9,6 @@
         class="ma-4">
         <v-form
           ref="form"
-          v-model="valid"
           lazy-validation
         >
           <v-text-field
@@ -18,16 +17,22 @@
             :rules="studentIdRules"
             required
           ></v-text-field>
-          <v-combobox
+          <v-autocomplete
+            :filter="universityFilter"
+            no-data-text="A university with that name can't be found."
             v-model="university"
             :items="universities"
             label="Select university"
-          ></v-combobox>
-          <v-combobox
+          >
+            <template v-slot:item="props">
+              {{ props.item.text }}
+            </template>
+          </v-autocomplete>
+          <v-autocomplete
             v-model="status"
             :items="statuses"
             label="Select status"
-          ></v-combobox>
+          ></v-autocomplete>
         </v-form>
       </div>
     </v-card>
@@ -55,13 +60,22 @@ export default Vue.extend({
     };
   },
   mounted() {
-    // const data = this.$data;
-    // this.fetchUniversities().then(universities => {
-    //   console.log(universities)
-    //   data.universities = universities.map(it => it.uniName)
-    // })
+    const data = this.$data;
+    this.fetchUniversities().then(universities => {
+      data.universities = universities.map(it => ({
+        text: it.uniName,
+        value: it.uniId
+      }));
+    })
   },
   methods: {
+    universityFilter(item: object, queryText: string, itemText: string): boolean {
+      if (itemText.toLowerCase().includes(queryText.toLowerCase())) {
+        return true
+      }
+      const acronym = Array.from(itemText).filter(it => it == it.toUpperCase() && it != it.toLowerCase()).join("")
+      return acronym.includes(queryText.toUpperCase());
+    },
     async fetchUniversities(): Promise<University[]> {
       return fetch(`${this.endpoint}/api/universities`, {
         credentials: "include",
