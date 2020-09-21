@@ -70,6 +70,22 @@ sortBy[1][order]=desc
 ```
 will sort first by `uniName` in descending order, then `id` in descending order.
 
+### Filtering
+Query parameters:  
+```
+filter: {
+  [columnName: string]: string[]
+}
+```
+For a full list of filter parameters, see [columns.ts](./src/utils/columns.ts)  
+#### Example
+```
+filter[uniId][0]=28&
+filter[gradCap][0]=5&
+filter[gradCap][1]=4.5
+```
+will show students who applied to NUS with a CAP of 5.0 or 4.5.
+
 
 ## Creating applications
 > HTTP: `POST /api/admin/applications/create`   

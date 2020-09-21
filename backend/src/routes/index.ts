@@ -23,7 +23,7 @@ router.get("/api/applications", (req, res, next) => {
     const admin = (req as AuthenticatedRequest).admin
     const applications = await ApplicationsController.getApplications(
       pagination.parseParams(req),
-      filtering.parseParams(req),
+      filtering.parseParams(req, admin),
       sorting.parseParams(req, admin),
       admin ? ["id", "comment", "informant", "dateInformed", "status"] : ["id", "status"]
     );

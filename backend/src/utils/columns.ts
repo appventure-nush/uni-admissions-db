@@ -23,12 +23,12 @@ export default [
     Application.associations.Student,
     false
   ),
-    new TableColumn(
+  new TableColumn(
     "majorName",
     Application.associations.Major,
     false
   ),
-    new TableColumn(
+  new TableColumn(
     "category",
     Application.associations.Major,
     false
@@ -38,12 +38,12 @@ export default [
     null,
     true
   ),
-    new TableColumn(
+  new TableColumn(
     "informant",
     null,
     true
   ),
-      new TableColumn(
+  new TableColumn(
     "dateInformed",
     null,
     true
