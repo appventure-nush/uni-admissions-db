@@ -7,6 +7,7 @@
         <v-checkbox
           class="ma-2"
           v-for='column in headers.filter(it=> !["id", "studentId", "uniName"].includes(it.value))'
+          v-bind:key="column.value"
           v-model="showColumns"
           :label="column.text"
           :value="column.value">
@@ -22,7 +23,21 @@
         :options.sync="options"
         :server-items-length="totalItems"
         item-key="id"
-      />
+      >
+        <template
+          v-for='headerItem of headers'
+          v-slot:[getSlotName(headerItem)]="{ header }">
+          {{ header.text }}
+          <v-icon
+            @click.stop="filterColumn===headerItem.value ? filterColumn='' : filterColumn=headerItem.value">
+            mdi-filter-variant
+          </v-icon>
+          <div
+            v-if="filterColumn===headerItem.value">
+            Filtered: {{headerItem.text}}
+          </div>
+        </template>
+      </v-data-table>
     </v-card>
   </v-container>
 </template>
@@ -83,6 +98,7 @@ export default Vue.extend({
       fetchError: false,
       fetchedData: [] as Array<Application>,
       showColumns: ["id", "studentId", "uniName", "gradCap", "majorName", "category", "country", "status"],
+      filterColumn: ""
     };
   },
   watch: {
@@ -140,6 +156,9 @@ export default Vue.extend({
     });
   },
   methods: {
+    getSlotName(header: DataTableHeader): string {
+      return "header." + header.value;
+    },
     async fetchData(): Promise<Paginated<Application>> {
       this.loading = true;
       const {page, itemsPerPage, sortBy, sortDesc} = this.options;
@@ -147,7 +166,7 @@ export default Vue.extend({
       if (sortDesc.length == 1) {
         queryString += `&sortBy[0][param]=${sortBy}&sortBy[0][order]=${sortDesc[0] ? "desc" : "asc"}`
       } else {
-        for (var i = 0; i < sortDesc.length; i++){
+        for (var i = 0; i < sortDesc.length; i++) {
           queryString += `&sortBy[${i}][param]=${sortBy[i]}&sortBy[${i}][order]=${sortDesc[i] ? "desc" : "asc"}`
         }
       }
