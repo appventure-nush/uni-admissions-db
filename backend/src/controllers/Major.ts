@@ -1,8 +1,15 @@
 import Major from "../models/Major";
 
 export default {
-  async getMajors() {
-    return Major.findAll();
+  async getMajors(uniId: number | undefined) {
+    if (uniId == undefined || Number.isNaN(uniId)) {
+      return Major.findAll();
+    }
+    return Major.findAll({
+      where: {
+        uniId
+      }
+    });
   },
 
   async getMajorById(id: number) {

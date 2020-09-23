@@ -1,14 +1,37 @@
 import express = require("express");
-
+import multer = require("multer");
 import ApplicationsController from "../controllers/Application";
 import MajorsController from "../controllers/Major";
 import StudentsController from "../controllers/Students";
 import UniversitiesController from "../controllers/University";
+import excel_parser from "../utils/excel_parser";
+import {promises as fs} from "fs";
+import pretty from "../utils/pretty";
 
 const router = express.Router();
 
+
+const upload = multer({dest: "uploads/"})
+
+router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (req, res) => {
+  if (!req.file) {
+    res.json({
+      error: true,
+      message: "No file attached",
+    });
+    return;
+  }
+  const file = await fs.readFile(req.file.path)
+  excel_parser(file)
+  res.json({
+    error: false,
+    message: "ok"
+  });
+  await fs.unlink(req.file.path)
+  return;
+})
 router.post("/api/admin/applications/create", async (req, res) => {
-  const { body } = req;
+  const {body} = req;
   const {
     studentId, universityId, majorId, status, informant = "", dateInformed = null,
     comment = "",
@@ -74,7 +97,7 @@ router.post("/api/admin/applications/create", async (req, res) => {
 });
 
 router.post("/api/admin/students/create", async (req, res) => {
-  const { body } = req;
+  const {body} = req;
   const {
     studentId, gradCap,
   } = body;
