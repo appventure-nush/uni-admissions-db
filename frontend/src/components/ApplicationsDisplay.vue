@@ -4,17 +4,40 @@
       <v-card-title>
         Applications
         <v-spacer/>
+        <v-checkbox
+          class="ma-2"
+          v-for='column in headers.filter(it=> !["id", "studentId", "uniName"].includes(it.value))'
+          v-bind:key="column.value"
+          v-model="showColumns"
+          :label="column.text"
+          :value="column.value">
+          <v-spacer/>
+        </v-checkbox>
       </v-card-title>
-
       <v-data-table
-        :headers="headers"
+        :footer-props="{'items-per-page-options': [10,20,30,50]}"
+        :headers='headers.filter(a=> ["id", "studentId", "uniName", ...showColumns].includes(a.value))'
         :items="parsedData"
         :loading="parsedData.length===0"
         :loading-text="fetchError ? fetchError : 'Loading...'"
         :options.sync="options"
         :server-items-length="totalItems"
         item-key="id"
-      />
+      >
+        <template
+          v-for='headerItem of headers'
+          v-slot:[getSlotName(headerItem)]="{ header }">
+          {{ header.text }}
+          <v-icon
+            @click.stop="filterColumn===headerItem.value ? filterColumn='' : filterColumn=headerItem.value">
+            mdi-filter-variant
+          </v-icon>
+          <div
+            v-if="filterColumn===headerItem.value">
+            Filtered: {{headerItem.text}}
+          </div>
+        </template>
+      </v-data-table>
     </v-card>
   </v-container>
 </template>
@@ -23,8 +46,6 @@
 import Vue from "vue";
 import {DataOptions, DataTableHeader} from "vuetify";
 import Application, {ApplicationTableRow} from "../types/application";
-import Major from "../types/major";
-import University from "../types/university";
 import Paginated from "@/types/paginated";
 
 export default Vue.extend({
@@ -43,6 +64,10 @@ export default Vue.extend({
         {
           text: "Student Id",
           value: "studentId",
+        },
+        {
+          text: "CAP",
+          value: "gradCap",
         },
         {
           text: "Major Name",
@@ -70,11 +95,13 @@ export default Vue.extend({
       ] as Array<DataTableHeader>,
       loading: true,
       totalItems: 0,
-      options: {} as DataOptions,
+      options: {
+        multiSort: true
+      } as DataOptions,
       fetchError: false,
       fetchedData: [] as Array<Application>,
-      majors: [] as Array<Major>,
-      universities: [] as Array<University>,
+      showColumns: ["id", "studentId", "uniName", "gradCap", "majorName", "category", "country", "status"],
+      filterColumn: ""
     };
   },
   watch: {
@@ -83,13 +110,23 @@ export default Vue.extend({
       handler() {
         this.fetchData().then((data: Paginated<Application>) => {
           this.fetchedData = data.data;
+          if (data.data[0].comment !== undefined && !this.headers.map(it => it.value).includes("comment")) {
+            this.headers.push(
+              {
+                text: "Comment",
+                value: "comment",
+              },
+              {
+                text: "Informant",
+                value: "informant",
+              },
+              {
+                text: "Date informed",
+                value: "dateInformed",
+              }
+            )
+          }
           this.totalItems = data.count;
-        });
-        this.fetchUniversities().then((data: University[]) => {
-          this.universities = data;
-        });
-        this.fetchMajors().then((data: Major[]) => {
-          this.majors = data;
         });
       },
       deep: true,
@@ -97,19 +134,20 @@ export default Vue.extend({
   },
   computed: {
     parsedData(): ApplicationTableRow[] {
-      if (this.totalItems === 0 || this.universities.length === 0
-        || this.majors.length === 0) return [];
+      if (this.totalItems === 0) return [];
       return this.$data.fetchedData.map((item: Application) => {
-        const major = this.majors[item.majorId - 1];
-        const university = this.universities[item.uniId - 1];
         return {
           id: item.id,
-          studentId: item.studentId,
-          majorName: major.majorName,
-          category: major.category,
-          uniName: university.uniName,
-          country: university.country,
+          studentId: item.Student.studentId,
+          majorName: item.Major.majorName,
+          category: item.Major.category,
+          uniName: item.University.uniName,
+          country: item.University.country,
           status: item.status,
+          comment: item.comment,
+          dateInformed: item.dateInformed,
+          informant: item.informant,
+          gradCap: item.Student.gradCap
         };
       });
     },
@@ -121,13 +159,20 @@ export default Vue.extend({
     });
   },
   methods: {
+    getSlotName(header: DataTableHeader): string {
+      return "header." + header.value;
+    },
     async fetchData(): Promise<Paginated<Application>> {
       this.loading = true;
       const {page, itemsPerPage, sortBy, sortDesc} = this.options;
-      console.log(sortDesc, sortBy)
-      var queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
-      if (sortDesc.length == 1) queryString += `&sortBy=${sortBy[0]}&sortDesc=${sortDesc[0]}`
-      console.log(queryString)
+      let queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+      if (sortDesc.length == 1) {
+        queryString += `&sortBy[0][param]=${sortBy}&sortBy[0][order]=${sortDesc[0] ? "desc" : "asc"}`
+      } else {
+        for (var i = 0; i < sortDesc.length; i++) {
+          queryString += `&sortBy[${i}][param]=${sortBy[i]}&sortBy[${i}][order]=${sortDesc[i] ? "desc" : "asc"}`
+        }
+      }
       return fetch(`${this.endpoint}/api/applications?${queryString}`, {
         credentials: "include",
       })
@@ -143,44 +188,6 @@ export default Vue.extend({
         })
         .catch((e) => {
           this.fetchError = e.toString();
-          return null;
-        });
-    },
-    async fetchMajors(): Promise<Major[]> {
-      return fetch(`${this.endpoint}/api/majors`, {
-        credentials: "include",
-      })
-        .then((a) => a.text())
-        .then((text) => {
-          try {
-            this.fetchError = false;
-            return JSON.parse(text);
-          } catch (e) {
-            console.log(e);
-          }
-          return null;
-        })
-        .catch((e) => {
-          console.log(e);
-          return null;
-        });
-    },
-    async fetchUniversities(): Promise<University[]> {
-      return fetch(`${this.endpoint}/api/universities`, {
-        credentials: "include",
-      })
-        .then((a) => a.text())
-        .then((text) => {
-          try {
-            this.fetchError = false;
-            return JSON.parse(text);
-          } catch (e) {
-            console.log(e);
-          }
-          return null;
-        })
-        .catch((e) => {
-          console.log(e);
           return null;
         });
     },

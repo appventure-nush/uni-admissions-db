@@ -1,8 +1,12 @@
+import Student from "@/types/student";
+import Major from "@/types/major";
+import University from "@/types/university";
+
 export default interface Application {
   id: number,
-  studentId: string,
-  majorId: number,
-  uniId: number,
+  Student: Student,
+  Major: Major,
+  University: University,
   status: string,
   informant: string,
   dateInformed: string | null,
