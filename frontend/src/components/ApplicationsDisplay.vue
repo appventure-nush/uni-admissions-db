@@ -30,7 +30,7 @@
           {{ header.text }}
           <v-icon
             @click.stop="filterColumn===headerItem.value ? filterColumn='' : filterColumn=headerItem.value">
-            mdi-filter-variant
+            mdi-filter-outline
           </v-icon>
           <div
             v-if="filterColumn===headerItem.value">
