@@ -6,7 +6,6 @@ import StudentsController from "../controllers/Students";
 import UniversitiesController from "../controllers/University";
 import excel_parser from "../utils/excel_parser";
 import {promises as fs} from "fs";
-import pretty from "../utils/pretty";
 
 const router = express.Router();
 
@@ -22,12 +21,15 @@ router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (
     return;
   }
   const file = await fs.readFile(req.file.path)
-  excel_parser(file)
+  const result = excel_parser(file)
+  await fs.unlink(req.file.path)
+  if (result?.error) {
+    return res.json(result);
+  }
   res.json({
     error: false,
     message: "ok"
   });
-  await fs.unlink(req.file.path)
   return;
 })
 router.post("/api/admin/applications/create", async (req, res) => {

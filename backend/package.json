@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node build/bin/www",
-    "start:dev": "tsnd --watch src --respawn --rs src/bin/www.ts",
+    "start:dev": "tsnd --watch src --respawn  --transpile-only --rs src/bin/www.ts",
     "loadData": "node build/dataloader.js"
   },
   "dependencies": {
