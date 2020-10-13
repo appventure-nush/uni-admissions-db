@@ -53,7 +53,7 @@ export default Vue.extend({
   data() {
     return {
       // eslint-disable-next-line no-restricted-globals
-      endpoint: location.hostname === "localhost" ? "https://uni-db.chatbox2.ml" : location.origin,
+      endpoint: location.hostname === "localhost" ? "https://uni-db.junron.dev" : location.origin,
       headers: [
         {
           text: "ID",

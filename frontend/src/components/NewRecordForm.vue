@@ -56,7 +56,7 @@ export default Vue.extend({
       status: "",
       statuses: ["Accepted", "Offered", "Rejected", "Waitlist", "Interview"],
       // eslint-disable-next-line no-restricted-globals
-      endpoint: location.hostname === "localhost" ? "https://uni-db.chatbox2.ml" : location.origin,
+      endpoint: location.hostname === "localhost" ? "https://uni-db.junron.dev" : location.origin,
     };
   },
   mounted() {
