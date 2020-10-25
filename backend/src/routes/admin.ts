@@ -5,7 +5,10 @@ import MajorsController from "../controllers/Major";
 import StudentsController from "../controllers/Students";
 import UniversitiesController from "../controllers/University";
 import excel_parser from "../utils/excel_parser";
+import validation from "../utils/validation";
 import {promises as fs} from "fs";
+import {ApplicationAttributes} from "../models/Application";
+import Student from "../models/Student";
 
 const router = express.Router();
 
@@ -34,64 +37,11 @@ router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (
 })
 router.post("/api/admin/applications/create", async (req, res) => {
   const {body} = req;
-  const {
-    studentId, universityId, majorId, status, informant = "", dateInformed = null,
-    comment = "",
-  } = body;
-  if (!studentId || !studentId.match(/20[0-9]{2}a[0-9]{3}/)) {
-    res.json({
-      error: true,
-      message: "Invalid student ID",
-    });
-    return;
+  const application = await validation.validateApplication(body)
+  if (application.error) {
+    return res.json(application)
   }
-  if (!await StudentsController.getStudentById(studentId)) {
-    res.json({
-      error: true,
-      message: "Student doesn't exist",
-    });
-    return;
-  }
-  const university = await UniversitiesController.getUniversityById(universityId);
-  if (!university) {
-    res.json({
-      error: true,
-      message: "Invalid university",
-    });
-    return;
-  }
-  const major = await MajorsController.getMajorById(majorId);
-  if (!major) {
-    res.json({
-      error: true,
-      message: "Invalid major",
-    });
-    return;
-  }
-  if (major.uniId !== universityId) {
-    res.json({
-      error: true,
-      message: "Major and university do not match",
-    });
-    return;
-  }
-  if (!status) {
-    res.json({
-      error: true,
-      message: "Status cannot be empty",
-    });
-    return;
-  }
-  const application = {
-    studentId,
-    majorId,
-    uniId: universityId,
-    status,
-    informant,
-    dateInformed,
-    comment,
-  };
-  await ApplicationsController.createApplication(application);
+  await ApplicationsController.createApplication(application as ApplicationAttributes);
   res.json({
     error: false,
     message: `Application created`,
@@ -116,6 +66,45 @@ router.post("/api/admin/students/create", async (req, res) => {
       message: "Invalid cap",
     });
   }
+  await StudentsController.addStudent({
+    studentId,
+    gradCap
+  })
+  res.json({
+    error: false,
+    message: `Student created`,
+  });
+});
+
+router.post("/api/admin/majors/create", async (req, res) => {
+  const {body} = req;
+  const {
+    majorName, category, uniId
+  } = body;
+  if (!majorName || !category) {
+    res.json({
+      error: true,
+      message: "Please fill in all fields",
+    });
+    return;
+  }
+  const university = await UniversitiesController.getUniversityById(uniId);
+  if (!university) {
+    return res.json({
+      error: true,
+      message: "Invalid university",
+    });
+  }
+  await MajorsController.createMajor({
+    uniId,
+    majorName,
+    category,
+    majorId:0
+  })
+  res.json({
+    error: false,
+    message: `Major created`,
+  });
 });
 
 export default router;

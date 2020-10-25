@@ -1,4 +1,4 @@
-import Student from "../models/Student";
+import Student, {StudentAttributes} from "../models/Student";
 
 export default {
   async getStudentById(id: string) {
@@ -9,7 +9,7 @@ export default {
     });
   },
 
-  async addStudent(student: Student) {
+  async addStudent(student: StudentAttributes) {
     return Student.create(student);
   },
 };

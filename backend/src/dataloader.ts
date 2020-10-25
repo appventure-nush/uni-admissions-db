@@ -127,11 +127,8 @@ for (const application of applications) {
   application.majorId = majors.findIndex((major) => major.majorNameIndex === application.majorId
     && major.uniId === application.uniId) + 1;
 }
-let i = 1;
 majors = majors.map((major) => {
-  major.majorId = i;
   delete major.majorNameIndex;
-  i += 1;
   return major;
 });
 

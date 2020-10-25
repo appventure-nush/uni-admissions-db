@@ -1,4 +1,4 @@
-import Major from "../models/Major";
+import Major, {MajorAttributes} from "../models/Major";
 
 export default {
   async getMajors(uniId: number | undefined) {
@@ -19,4 +19,10 @@ export default {
       },
     });
   },
+
+  async createMajor(major: MajorAttributes){
+    delete major.majorId
+    console.log(major)
+    return Major.create(major)
+  }
 };
