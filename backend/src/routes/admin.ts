@@ -8,7 +8,6 @@ import excel_parser from "../utils/excel_parser";
 import validation from "../utils/validation";
 import {promises as fs} from "fs";
 import {ApplicationAttributes} from "../models/Application";
-import Student from "../models/Student";
 
 const router = express.Router();
 
@@ -37,9 +36,9 @@ router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (
 })
 router.post("/api/admin/applications/create", async (req, res) => {
   const {body} = req;
-  const application = await validation.validateApplication(body)
+  const application = await validation.validateApplication(body);
   if (application.error) {
-    return res.json(application)
+    return res.json(application);
   }
   await ApplicationsController.createApplication(application as ApplicationAttributes);
   res.json({
@@ -47,6 +46,32 @@ router.post("/api/admin/applications/create", async (req, res) => {
     message: `Application created`,
   });
 });
+
+router.post("/api/admin/applications/edit", async (req, res) => {
+  const {body} = req;
+  if (!body.id || !(body.id instanceof Number)) {
+    return res.json({
+      error: true,
+      message: "Please specify application number."
+    });
+  }
+  const existingApplication = await ApplicationsController.getApplicationById(body.name);
+  if(existingApplication == null){
+    return res.json({
+      error: true,
+      message: "Application does not exist"
+    });
+  }
+  const application = await validation.validateApplication(body);
+  if (application.error) {
+    return res.json(application);
+  }
+  await ApplicationsController.editApplication(body.id, application as ApplicationAttributes);
+  return res.json({
+    error: false,
+    message: "Application edited successfully"
+  })
+})
 
 router.post("/api/admin/students/create", async (req, res) => {
   const {body} = req;
@@ -69,7 +94,7 @@ router.post("/api/admin/students/create", async (req, res) => {
   await StudentsController.addStudent({
     studentId,
     gradCap
-  })
+  });
   res.json({
     error: false,
     message: `Student created`,
@@ -99,7 +124,7 @@ router.post("/api/admin/majors/create", async (req, res) => {
     uniId,
     majorName,
     category,
-    majorId:0
+    majorId: 0
   })
   res.json({
     error: false,

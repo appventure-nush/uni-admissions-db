@@ -65,4 +65,18 @@ export default {
   async createApplication(application: ApplicationAttributes) {
     return ApplicationTable.create(application);
   },
+  async getApplicationById(id: number){
+    return ApplicationTable.findOne({
+      where: {
+        id
+      }
+    })
+  },
+  async editApplication(id: number, application: ApplicationAttributes){
+    return ApplicationTable.update(application, {
+      where:{
+        id
+      }
+    })
+  }
 };
