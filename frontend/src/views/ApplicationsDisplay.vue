@@ -22,22 +22,7 @@
         :loading-text="fetchError ? fetchError : 'Loading...'"
         :options.sync="options"
         :server-items-length="totalItems"
-        item-key="id"
-      >
-        <template
-          v-for='headerItem of headers'
-          v-slot:[getSlotName(headerItem)]="{ header }">
-          {{ header.text }}
-          <v-icon
-            @click.stop="filterColumn===headerItem.value ? filterColumn='' : filterColumn=headerItem.value">
-            mdi-filter-outline
-          </v-icon>
-          <div
-            v-if="filterColumn===headerItem.value">
-            Filtered: {{headerItem.text}}
-          </div>
-        </template>
-      </v-data-table>
+        item-key="id"/>
     </v-card>
   </v-container>
 </template>
@@ -47,19 +32,17 @@ import Vue from "vue";
 import {DataOptions, DataTableHeader} from "vuetify";
 import Application, {ApplicationTableRow} from "../types/application";
 import Paginated from "@/types/paginated";
+import config from "@/config";
 
 export default Vue.extend({
   name: "ApplicationsDisplay",
   data() {
     return {
-      // eslint-disable-next-line no-restricted-globals
-      endpoint: location.hostname === "localhost" ? "https://uni-db.junron.dev" : location.origin,
       headers: [
         {
           text: "ID",
           value: "id",
           divider: true,
-          width: "10%",
         },
         {
           text: "Student Id",
@@ -156,9 +139,6 @@ export default Vue.extend({
     });
   },
   methods: {
-    getSlotName(header: DataTableHeader): string {
-      return "header." + header.value;
-    },
     async fetchData(): Promise<Paginated<Application>> {
       this.loading = true;
       const {page, itemsPerPage, sortBy, sortDesc} = this.options;
@@ -170,7 +150,7 @@ export default Vue.extend({
           queryString += `&sortBy[${i}][param]=${sortBy[i]}&sortBy[${i}][order]=${sortDesc[i] ? "desc" : "asc"}`
         }
       }
-      return fetch(`${this.endpoint}/api/applications?${queryString}`, {
+      return fetch(`${config.api}/api/applications?${queryString}`, {
         credentials: "include",
       })
         .then((a) => a.text())

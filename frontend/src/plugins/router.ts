@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter, {RouteConfig} from "vue-router";
-import ApplicationsDisplay from "../components/ApplicationsDisplay.vue";
-import NewRecordForm from "@/components/NewRecordForm.vue";
+import ApplicationsDisplay from "../views/ApplicationsDisplay.vue";
+import NewRecordForm from "@/views/NewRecordForm.vue";
 
 Vue.use(VueRouter);
 
