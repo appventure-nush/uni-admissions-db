@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 
 router.get("/api/applications", (req, res, next) => {
   (async () => {
-    const admin = (req as AuthenticatedRequest).admin
+    const admin = (req as AuthenticatedRequest).admin;
     const applications = await ApplicationsController.getApplications(
       pagination.parseParams(req),
       filtering.parseParams(req, admin),
@@ -33,7 +33,16 @@ router.get("/api/applications", (req, res, next) => {
       next(e)
     })
 });
-
+router.get("/api/summary", (req, res, next) => {
+  (async () => {
+    const admin = (req as AuthenticatedRequest).admin;
+    const data = await ApplicationsController.summarize(filtering.parseParams(req, admin),[],[]);
+    pretty(req, res, data);
+  })()
+    .catch(e => {
+      next(e);
+    })
+})
 router.get("/api/universities", async (req, res) => {
   const universities = await UniversitiesController.getUniversities();
   pretty(req, res, universities);
@@ -45,10 +54,6 @@ router.get("/api/majors", async (req, res) => {
   pretty(req, res, majors);
 });
 
-router.get("/api/applications/avgcap", async (req, res) => {
-  const applications = await ApplicationsController.getAverageCap();
-  res.json(applications);
-});
 
 export default router;
 
