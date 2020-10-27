@@ -108,7 +108,7 @@ export default {
     const caps = combine_range(gradCaps.map(it => parseFloat(it) * 10));
     return {
       caps,
-      studentIdsOut,
+      studentIds: studentIdsOut,
       universities: combine_range(uniIds),
       majors: combine_range(majorIds),
       years: combine_range(years),

@@ -7,7 +7,13 @@ export default function (items: number[]): Array<string | number> {
   for (let i = 1; i < items.length; i++) {
     if (items[i] != prev + 1) {
       if(seq){
-        output.push(prev);
+        // 2 element sequence
+        if (output[output.length-2] == prev-1){
+          output[output.length-1] = prev;
+          continue
+        }else{
+          output.push(prev);
+        }
       }
       seq = false;
       output.push(items[i]);
