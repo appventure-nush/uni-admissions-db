@@ -81,7 +81,7 @@ export default {
       }
     })
   },
-  async summarize(conditions: WhereOptions<Application> | undefined, include: string[], exclude: string[]) {
+  async summarize(conditions: WhereOptions<Application> | undefined) {
     const years : number[] = [];
     const studentIdsObject: any = {};
     const gradCaps: string[] = await queryDistinct("Student", "gradCap", conditions);
@@ -90,6 +90,7 @@ export default {
     const majorIds: number[] = await queryDistinct("Application", "majorId", conditions);
     const countries: string[] = await queryDistinct("University", "country", conditions);
     const statuses: string[] = await queryDistinct("Application", "status", conditions);
+    const categories: string[] = await queryDistinct("Major", "category", conditions);
     for(const id of studentIds){
       const year = parseInt(id.substring(0,4));
       if(years.includes(year)){
@@ -114,6 +115,7 @@ export default {
       years: combine_range(years),
       countries,
       statuses,
+      categories,
     };
   }
 };

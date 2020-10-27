@@ -36,7 +36,27 @@ router.get("/api/applications", (req, res, next) => {
 router.get("/api/summary", (req, res, next) => {
   (async () => {
     const admin = (req as AuthenticatedRequest).admin;
-    const data = await ApplicationsController.summarize(filtering.parseParams(req, admin),[],[]);
+    const data: any = await ApplicationsController.summarize(filtering.parseParams(req, admin));
+    const validKeys = Object.keys(data);
+    if(req.query.include && req.query.exclude){
+      throw "Cannot use both include and exclude";
+    }
+    if(req.query.include){
+      const include = req.query.include as string[];
+      for(const key of validKeys){
+        if(!include.includes(key)){
+          delete data[key];
+        }
+      }
+    }
+    if(req.query.exclude){
+      const exclude = req.query.exclude as string[];
+      for(const key of validKeys){
+        if(exclude.includes(key)){
+          delete data[key];
+        }
+      }
+    }
     pretty(req, res, data);
   })()
     .catch(e => {

@@ -137,7 +137,7 @@ Example response:
 
 Returns a list of values for each application column.  
 Has the same filter syntax as `/api/applications`.  
-Use `exclude`/`include` to only return certain columns.  
+Use `exclude`/`include` query parameters to only return certain fields.  
 `..` indicates ranges.  
 For example, `[1,"..",5]` is equivalent to `[1,2,3,4,5]`.  
 Example response:
@@ -154,7 +154,8 @@ Example response:
     "majors": [1,"..",100],
     "universities: [1,"..",100],
     "countries": ["USA","New Zealand","Singapore"],
-    "statuses":["Offered - Accepted", "Rejected - Final"]
+    "statuses":["Offered - Accepted", "Rejected - Final"],
+    "categories":["Business", "Computing", "Biology"]
 }
 ```
 Note: `caps` are multiplied by 10 to avoid floating-point errors.
