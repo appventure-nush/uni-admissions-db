@@ -2,17 +2,24 @@ import xlsx = require("xlsx");
 import Application, {ApplicationAttributes} from "../models/Application";
 import Student, {StudentAttributes} from "../models/Student";
 import Students from "../controllers/Students";
+import University from "../controllers/University";
+import Major from "../controllers/Major";
+import constants from "./constants";
 
-export default async function (file: Buffer) {
+export default async function (file: Buffer): Promise<{ error: boolean, message: string }> {
   const wb = xlsx.read(file, {
-    type: "buffer"
+    type: "buffer",
+    cellDates: true,
   });
   const {Sheet1: sheet1} = wb.Sheets;
   const columns: string[] = [];
   let curr = 65;
   const ref = sheet1["!ref"];
   if (ref == undefined) {
-    return;
+    return {
+      error: true,
+      message: "Invalid sheet"
+    };
   }
   const end = ref.split(":")[1][0];
   while (String.fromCharCode(curr) != end) {
@@ -72,11 +79,14 @@ export default async function (file: Buffer) {
           const studentId = cellValue as string;
           const existingStudent = await Students.getStudentById(studentId);
           if (existingStudent == null) {
-            if (!await Students.checkStudentId(studentId)) {
-              return {
-                error: true,
-                message: `Student ID on row ${i} (${cellValue}) is invalid.`
-              };
+            const lastStudentId = students[students.length - 1]?.studentId;
+            if (!(lastStudentId && lastStudentId.substring(0, 4) == studentId.substring(0, 4) && parseInt(lastStudentId.substring(5, 8)) + 1 == parseInt(studentId.substring(5, 8)))) {
+              if (!await Students.checkStudentId(studentId)) {
+                return {
+                  error: true,
+                  message: `Student ID on row ${i} (${cellValue}) is invalid.`
+                };
+              }
             }
             student.studentId = studentId;
           } else {
@@ -87,7 +97,7 @@ export default async function (file: Buffer) {
         }
         case 1: {
           // Skip existing students
-          if (studentExists){
+          if (studentExists) {
             continue;
           }
           if (!Number.isFinite(cellValue)) {
@@ -103,11 +113,66 @@ export default async function (file: Buffer) {
             };
           }
           student.gradCap = cellValue as number;
-          students.push(student);
+          students.push(student.toJSON() as StudentAttributes);
+          break;
+        }
+        case 2: {
+          const uniName = cellValue as string;
+          const university = await University.getUniversityByName(uniName, false);
+          if (!university) {
+            return {
+              error: true,
+              message: `Invalid university name on row ${i} (${cellValue})`
+            };
+          }
+          application.uniId = university.uniId;
+          break;
+        }
+        case 3: {
+          const status = cellValue as string;
+          if (!constants.statuses.includes(status)) {
+            return {
+              error: true,
+              message: `Invalid status on row ${i} (${cellValue})`
+            };
+          }
+          application.status = status;
+          break;
+        }
+        case 4: {
+          const majorName = cellValue as string;
+          const major = await Major.getMajorByName(majorName, application.uniId);
+          if (!major) {
+            return {
+              error: true,
+              message: `Invalid major name on row ${i} (${cellValue})`
+            };
+          }
+          application.majorId = major.majorId;
+          break;
+        }
+        case 5: {
+          application.informant = cellValue as string;
+          break;
+        }
+        case 6: {
+          if(cellValue instanceof Date){
+            application.dateInformed = cellValue;
+          }
+          break;
+        }
+        case 7:{
+          application.comment = cellValue as string;
+          break;
         }
       }
     }
-    applications.push(application);
+    applications.push(application.toJSON() as ApplicationAttributes);
   }
-  console.log(applications);
+  await Student.bulkCreate(students);
+  await Application.bulkCreate(applications);
+  return {
+    error: false,
+    message: "ok",
+  };
 }

@@ -23,9 +23,9 @@ router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (
     return;
   }
   const file = await fs.readFile(req.file.path);
-  const result = excel_parser(file);
+  const result = await excel_parser(file);
   await fs.unlink(req.file.path);
-  if (result?.error) {
+  if (result.error) {
     return res.json(result);
   }
   res.json({
