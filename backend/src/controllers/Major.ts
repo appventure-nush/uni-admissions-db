@@ -21,8 +21,8 @@ export default {
   },
 
   async createMajor(major: MajorAttributes){
-    delete major.majorId
-    console.log(major)
-    return Major.create(major)
+    delete major.majorId;
+    console.log(major);
+    return Major.create(major);
   }
 };

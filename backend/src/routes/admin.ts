@@ -12,7 +12,7 @@ import {ApplicationAttributes} from "../models/Application";
 const router = express.Router();
 
 
-const upload = multer({dest: "uploads/"})
+const upload = multer({dest: "uploads/"});
 
 router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (req, res) => {
   if (!req.file) {
@@ -22,9 +22,9 @@ router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (
     });
     return;
   }
-  const file = await fs.readFile(req.file.path)
-  const result = excel_parser(file)
-  await fs.unlink(req.file.path)
+  const file = await fs.readFile(req.file.path);
+  const result = excel_parser(file);
+  await fs.unlink(req.file.path);
   if (result?.error) {
     return res.json(result);
   }
@@ -33,7 +33,7 @@ router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (
     message: "ok"
   });
   return;
-})
+});
 router.post("/api/admin/applications/create", async (req, res) => {
   const {body} = req;
   const application = await validation.validateApplication(body);
@@ -70,8 +70,8 @@ router.post("/api/admin/applications/edit", async (req, res) => {
   return res.json({
     error: false,
     message: "Application edited successfully"
-  })
-})
+  });
+});
 
 router.post("/api/admin/students/create", async (req, res) => {
   const {body} = req;
@@ -125,7 +125,7 @@ router.post("/api/admin/majors/create", async (req, res) => {
     majorName,
     category,
     majorId: 0
-  })
+  });
   res.json({
     error: false,
     message: `Major created`,

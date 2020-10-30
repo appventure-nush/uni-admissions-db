@@ -24,6 +24,6 @@ Student.init( {
 },{
   tableName: "students",
   sequelize
-})
+});
 
 export default Student;

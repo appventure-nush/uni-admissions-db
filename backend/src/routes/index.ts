@@ -30,13 +30,13 @@ router.get("/api/applications", (req, res, next) => {
     pretty(req, res, applications);
   })()
     .catch(e => {
-      next(e)
-    })
+      next(e);
+    });
 });
 router.get("/api/summary", (req, res, next) => {
   (async () => {
     const admin = (req as AuthenticatedRequest).admin;
-    const data: any = await ApplicationsController.summarize(filtering.parseParams(req, admin));
+    const data: any = await ApplicationsController.summarize(filtering.parseParams(req, admin), req.query.full === "true");
     const validKeys = Object.keys(data);
     if(req.query.include && req.query.exclude){
       throw "Cannot use both include and exclude";
@@ -61,15 +61,15 @@ router.get("/api/summary", (req, res, next) => {
   })()
     .catch(e => {
       next(e);
-    })
-})
+    });
+});
 router.get("/api/universities", async (req, res) => {
   const universities = await UniversitiesController.getUniversities();
   pretty(req, res, universities);
 });
 
 router.get("/api/majors", async (req, res) => {
-  const uniId = req.query.uniId == undefined ? undefined : parseInt(req.query.uniId.toString())
+  const uniId = req.query.uniId == undefined ? undefined : parseInt(req.query.uniId.toString());
   const majors = await MajorsController.getMajors(uniId);
   pretty(req, res, majors);
 });

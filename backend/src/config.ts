@@ -10,7 +10,7 @@ class Config {
 }
 
 const variables = ["DB_USER", "DB_PASSWORD", "DB_NAME", "DB_HOST", "MS_CLIENT_ID", "ADMIN_EMAILS"];
-let config = new Config();
+let config: any = {};
 try {
   // eslint-disable-next-line global-require
   config = require("../config.json");
@@ -18,17 +18,14 @@ try {
   debug.log("Config file not found, using environment variables");
 }
 variables.forEach((variable) => {
-  // @ts-ignore
   if (config[variable] === undefined) {
     if (process.env[variable] === undefined) return;
     let value;
     try {
-      // @ts-ignore
-      value = JSON.parse(process.env[variable]);
+      value = JSON.parse(process.env[variable] ?? "");
     } catch (e) {
       value = process.env[variable];
     }
-    // @ts-ignore
     config[variable] = value;
   }
 });

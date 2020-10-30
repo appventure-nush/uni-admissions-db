@@ -18,7 +18,7 @@ export default async function verifyToken(token: string) {
     client.getSigningKey(kid, async (err, key) => {
       if (err) return reject(err);
       try {
-        const signingKey = key.getPublicKey()
+        const signingKey = key.getPublicKey();
         const options: VerifyOptions = {
           algorithms: ["RS256"],
           ignoreExpiration: true,
@@ -35,4 +35,4 @@ export default async function verifyToken(token: string) {
       }
     });
   }));
-};
+}

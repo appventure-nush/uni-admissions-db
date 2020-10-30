@@ -2,8 +2,8 @@ import auth from "./middlewares/ms-auth";
 
 import index from "./routes";
 import admin from "./routes/admin";
-import adminMiddleware from "./middlewares/admin"
-import express = require('express');
+import adminMiddleware from "./middlewares/admin";
+import express = require("express");
 import path = require("path");
 import cookieParser = require("cookie-parser");
 import logger = require("morgan");

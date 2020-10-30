@@ -1,6 +1,6 @@
 export default function (items: number[]): Array<string | number> {
   const output = new Array<string | number>();
-  items.sort((x,y)=>x - y)
+  items.sort((x,y)=>x - y);
   let prev = items[0];
   let seq = false;
   output.push(prev);
@@ -10,7 +10,7 @@ export default function (items: number[]): Array<string | number> {
         // 2 element sequence
         if (output[output.length-2] == prev-1){
           output[output.length-1] = prev;
-          continue
+          continue;
         }else{
           output.push(prev);
         }

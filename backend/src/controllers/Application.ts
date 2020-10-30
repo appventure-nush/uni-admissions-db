@@ -8,6 +8,8 @@ import ApplicationTable from "../models/Application";
 import Application, {ApplicationAttributes} from "../models/Application";
 import {Order, WhereOptions} from "sequelize/types/lib/model";
 import combine_range from "../utils/combine_range";
+import Students from "./Students";
+import Majors from "./Major";
 import Sequelize = require( "sequelize");
 
 Student.sync()
@@ -33,7 +35,7 @@ async function queryDistinct(tableName: string, columnName: string, conditions: 
     }],
     where: conditions,
     raw: true
-  })).map((it: any) => it[columnName])
+  })).map((it: any) => it[columnName]);
 }
 
 export default {
@@ -72,35 +74,35 @@ export default {
       where: {
         id
       }
-    })
+    });
   },
   async editApplication(id: number, application: ApplicationAttributes) {
     return ApplicationTable.update(application, {
       where: {
         id
       }
-    })
+    });
   },
-  async summarize(conditions: WhereOptions<Application> | undefined) {
-    const years : number[] = [];
+  async summarize(conditions: WhereOptions<Application> | undefined, full = false) {
+    const years: number[] = [];
     const studentIdsObject: any = {};
-    const gradCaps: string[] = await queryDistinct("Student", "gradCap", conditions);
-    const studentIds: string[] = await queryDistinct("Student", "studentId", conditions);
+    const gradCaps: string[] = full ? await Students.getGradCaps() : await queryDistinct("Student", "gradCap", conditions);
+    const studentIds: string[] = full ? (await Students.getStudents()).map(it => it.studentId) : await queryDistinct("Student", "studentId", conditions);
     const uniIds: number[] = await queryDistinct("Application", "uniId", conditions);
-    const majorIds: number[] = await queryDistinct("Application", "majorId", conditions);
+    const majorIds: number[] = full ? (await Majors.getMajors(undefined)).map(it => it.majorId) : await queryDistinct("Application", "majorId", conditions);
     const countries: string[] = await queryDistinct("University", "country", conditions);
     const statuses: string[] = await queryDistinct("Application", "status", conditions);
     const categories: string[] = await queryDistinct("Major", "category", conditions);
-    for(const id of studentIds){
-      const year = parseInt(id.substring(0,4));
-      if(years.includes(year)){
-        studentIdsObject[year].push(parseInt(id.substring(5,8)));
-      }else{
+    for (const id of studentIds) {
+      const year = parseInt(id.substring(0, 4));
+      if (years.includes(year)) {
+        studentIdsObject[year].push(parseInt(id.substring(5, 8)));
+      } else {
         years.push(year);
-        studentIdsObject[year] = [parseInt(id.substring(5,8))]
+        studentIdsObject[year] = [parseInt(id.substring(5, 8))];
       }
     }
-    const studentIdsOut = Object.entries(studentIdsObject).map(entry=>{
+    const studentIdsOut = Object.entries(studentIdsObject).map(entry => {
       return {
         year: parseInt(entry[0].toString()),
         ids: combine_range(entry[1] as number[])

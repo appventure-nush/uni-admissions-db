@@ -1,7 +1,7 @@
 import verify from "../utils/auth";
 
 import config from "../config";
-import * as express from 'express';
+import * as express from "express";
 import {AuthenticatedRequest} from "../types/express";
 
 export default () => async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
@@ -21,7 +21,7 @@ export default () => async (req: AuthenticatedRequest, res: express.Response, ne
   } | null;
   if (decodedToken == null) return;
   if (config.ADMIN_EMAILS.includes(decodedToken.unique_name)) {
-    req.admin = true
+    req.admin = true;
   }
   next();
 };

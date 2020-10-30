@@ -1,17 +1,27 @@
 module.exports = {
+  root: true,
   env: {
     commonjs: true,
     es2020: true,
     node: true,
   },
+  parser: "@typescript-eslint/parser",
+  plugins: [
+    "@typescript-eslint"
+  ],
   extends: [
-    "airbnb-base",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   parserOptions: {
-    ecmaVersion: 11,
+    ecmaVersion: 2020,
   },
   rules: {
-    quotes: ["error", "double", { allowTemplateLiterals: true }],
-    "linebreak-style": ["error", "windows"],
+    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    quotes: ["error", "double", {allowTemplateLiterals: true}],
+    "semi": 0,
+    "@typescript-eslint/semi": 2,
+    "@typescript-eslint/no-var-requires": 0,
   },
 };

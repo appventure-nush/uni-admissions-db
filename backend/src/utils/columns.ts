@@ -5,47 +5,47 @@ export default [
   new TableColumn(
     "uniName",
     Application.associations.University,
-    false
+    false,
   ),
 
   new TableColumn(
     "country",
     Application.associations.University,
-    false
+    false,
   ),
   new TableColumn(
     "studentId",
     Application.associations.Student,
-    false
+    false,
   ),
   new TableColumn(
     "gradCap",
     Application.associations.Student,
-    false
+    false,
   ),
   new TableColumn(
     "majorName",
     Application.associations.Major,
-    false
+    false,
   ),
   new TableColumn(
     "category",
     Application.associations.Major,
-    false
+    false,
   ),
   new TableColumn(
     "comment",
     null,
-    true
+    true,
   ),
   new TableColumn(
     "informant",
     null,
-    true
+    true,
   ),
   new TableColumn(
     "dateInformed",
     null,
-    true
+    true,
   ),
-]
+];

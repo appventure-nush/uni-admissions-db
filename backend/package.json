@@ -6,7 +6,8 @@
     "build": "tsc",
     "start": "node build/bin/www",
     "start:dev": "tsnd --watch src --respawn  --transpile-only --rs src/bin/www.ts",
-    "loadData": "node build/dataloader.js"
+    "loadData": "node build/dataloader.js",
+    "lint": "eslint . --ext .ts"
   },
   "dependencies": {
     "cookie-parser": "^1.4.5",
@@ -33,6 +34,8 @@
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "ts-node-dev": "^1.0.0-pre.57",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "@typescript-eslint/parser": "^4.6.0",
+    "@typescript-eslint/eslint-plugin": "^4.6.0"
   }
 }
