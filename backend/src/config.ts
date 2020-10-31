@@ -1,4 +1,4 @@
-import debug = require("debug");
+import * as NodeVault from "node-vault";
 
 class Config {
   public DB_USER!: string;
@@ -9,25 +9,30 @@ class Config {
   public ADMIN_EMAILS: string[] = [];
 }
 
-const variables = ["DB_USER", "DB_PASSWORD", "DB_NAME", "DB_HOST", "MS_CLIENT_ID", "ADMIN_EMAILS"];
-let config: any = {};
-try {
-  // eslint-disable-next-line global-require
-  config = require("../config.json");
-} catch (e) {
-  debug.log("Config file not found, using environment variables");
-}
-variables.forEach((variable) => {
-  if (config[variable] === undefined) {
-    if (process.env[variable] === undefined) return;
-    let value;
-    try {
-      value = JSON.parse(process.env[variable] ?? "");
-    } catch (e) {
-      value = process.env[variable];
-    }
-    config[variable] = value;
-  }
-});
+let config: Config | null = null;
 
-export default config as Config;
+export default async (): Promise<Config> => {
+  if (config != null) {
+    return config;
+  }
+  try {
+    const conf = require("../config.json");
+    config = conf;
+    return conf;
+  } catch (e) {
+    const vaultClient = NodeVault({
+      endpoint: "https://vault.nush.app",
+    });
+    const token = (await vaultClient.userpassLogin({
+      username: "uni-db",
+      password: process.env.VAULT_PASSWORD
+    })).auth.client_token;
+    const secretsClient = NodeVault({
+      endpoint: "https://vault.nush.app",
+      token
+    });
+    const conf = (await secretsClient.read("apps/data/uni-db")).data;
+    config = conf;
+    return conf;
+  }
+};

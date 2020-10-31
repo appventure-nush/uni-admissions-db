@@ -7,28 +7,32 @@ export interface UniversityAttributes {
   uniName: string;
   country: string;
 }
-class University extends Sequelize.Model implements UniversityAttributes{
+
+class University extends Sequelize.Model implements UniversityAttributes {
   public uniId!: number;
   public uniName!: string;
   public country!: string;
 }
-University.init({
-  uniId: {
-    type: Sequelize.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  uniName: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  country: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-},{
-  tableName:"universities",
-  sequelize
+
+sequelize().then(sequelize => {
+  University.init({
+    uniId: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    uniName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    country: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  }, {
+    tableName: "universities",
+    sequelize
+  });
 });
 
 export default University;

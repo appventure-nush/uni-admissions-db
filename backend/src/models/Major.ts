@@ -10,37 +10,40 @@ export interface MajorAttributes {
   uniId: number;
 }
 
-class Major extends Sequelize.Model implements MajorAttributes{
+class Major extends Sequelize.Model implements MajorAttributes {
   public majorId!: number;
   public majorName!: string;
   public category!: string;
   public uniId!: number;
 }
 
-Major.init({
-  majorId: {
-    type: Sequelize.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  majorName: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  category: {
-    type: Sequelize.STRING,
-  },
-  uniId: {
-    type: Sequelize.INTEGER,
-    references: {
-      model: "universities",
-      key: "uniId",
+sequelize().then(sequelize => {
+  Major.init({
+    majorId: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-  },
-}, {
-  tableName: "majors",
-  sequelize
+    majorName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    category: {
+      type: Sequelize.STRING,
+    },
+    uniId: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: "universities",
+        key: "uniId",
+      },
+    },
+  }, {
+    tableName: "majors",
+    sequelize
+  });
 });
+
 Major.belongsTo(University, {foreignKey: "uniId"});
 
 export default Major;

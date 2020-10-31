@@ -20,7 +20,7 @@ export default () => async (req: AuthenticatedRequest, res: express.Response, ne
     unique_name: string
   } | null;
   if (decodedToken == null) return;
-  if (config.ADMIN_EMAILS.includes(decodedToken.unique_name)) {
+  if ((await config()).ADMIN_EMAILS.includes(decodedToken.unique_name)) {
     req.admin = true;
   }
   next();
