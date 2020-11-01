@@ -24,6 +24,7 @@
     "node-vault": "^0.9.20"
   },
   "devDependencies": {
+    "@types/request": "^2.48.5",
     "@types/cookie-parser": "^1.4.2",
     "@types/debug": "^4.1.5",
     "@types/jsonwebtoken": "^8.5.0",
