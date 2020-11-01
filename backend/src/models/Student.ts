@@ -12,21 +12,19 @@ class Student extends Sequelize.Model implements StudentAttributes {
   public gradCap!: number;
 }
 
-sequelize().then(sequelize => {
-  Student.init({
-    studentId: {
-      type: Sequelize.CHAR(8),
-      allowNull: false,
-      primaryKey: true,
-    },
-    gradCap: {
-      allowNull: false,
-      type: Sequelize.DECIMAL(2, 1),
-    },
-  }, {
-    tableName: "students",
-    sequelize
-  });
+Student.init({
+  studentId: {
+    type: Sequelize.CHAR(8),
+    allowNull: false,
+    primaryKey: true,
+  },
+  gradCap: {
+    allowNull: false,
+    type: Sequelize.DECIMAL(2, 1),
+  },
+}, {
+  tableName: "students",
+  sequelize
 });
 
 

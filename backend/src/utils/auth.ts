@@ -23,7 +23,7 @@ export default async function verifyToken(token: string) {
           algorithms: ["RS256"],
           ignoreExpiration: true,
           maxAge: "1 year",
-          audience: (await config()).MS_CLIENT_ID,
+          audience: config.MS_CLIENT_ID,
         };
         const result: any = verify(token, signingKey, options);
         if (result.iss !== "https://sts.windows.net/d72a7172-d5f8-4889-9a85-d7424751592a/") {

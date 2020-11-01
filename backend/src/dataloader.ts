@@ -155,8 +155,6 @@ setTimeout(async () => {
   await Application.bulkCreate(applications);
 
   setTimeout(() => {
-    sequelize().then(sequelize => {
-      sequelize.close();
-    });
+    sequelize.close();
   }, 1000);
 }, 10000);

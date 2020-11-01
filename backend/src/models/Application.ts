@@ -28,49 +28,47 @@ class Application extends Sequelize.Model implements ApplicationAttributes {
   uniId!: number;
 }
 
-sequelize().then(sequelize => {
-  Application.init({
-    studentId: {
-      type: Sequelize.CHAR(8),
-      references: {
-        model: "students",
-        key: "studentId",
-      },
-      allowNull: false,
+Application.init({
+  studentId: {
+    type: Sequelize.CHAR(8),
+    references: {
+      model: "students",
+      key: "studentId",
     },
-    majorId: {
-      type: Sequelize.INTEGER,
-      references: {
-        model: "majors",
-        key: "majorId",
-      },
-      allowNull: false,
+    allowNull: false,
+  },
+  majorId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: "majors",
+      key: "majorId",
     },
-    uniId: {
-      type: Sequelize.INTEGER,
-      references: {
-        model: "universities",
-        key: "uniId",
-      },
-      allowNull: false,
+    allowNull: false,
+  },
+  uniId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: "universities",
+      key: "uniId",
     },
-    status: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    informant: {
-      type: Sequelize.STRING,
-    },
-    dateInformed: {
-      type: Sequelize.TIME,
-    },
-    comment: {
-      type: Sequelize.TEXT,
-    },
-  }, {
-    tableName: "applications",
-    sequelize
-  });
+    allowNull: false,
+  },
+  status: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  informant: {
+    type: Sequelize.STRING,
+  },
+  dateInformed: {
+    type: Sequelize.TIME,
+  },
+  comment: {
+    type: Sequelize.TEXT,
+  },
+}, {
+  tableName: "applications",
+  sequelize
 });
 
 

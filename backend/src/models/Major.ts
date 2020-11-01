@@ -17,33 +17,32 @@ class Major extends Sequelize.Model implements MajorAttributes {
   public uniId!: number;
 }
 
-sequelize().then(sequelize => {
-  Major.init({
-    majorId: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+Major.init({
+  majorId: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  majorName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  category: {
+    type: Sequelize.STRING,
+  },
+  uniId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: "universities",
+      key: "uniId",
     },
-    majorName: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    category: {
-      type: Sequelize.STRING,
-    },
-    uniId: {
-      type: Sequelize.INTEGER,
-      references: {
-        model: "universities",
-        key: "uniId",
-      },
-    },
-  }, {
-    tableName: "majors",
-    sequelize
-  });
+  },
+}, {
+  tableName: "majors",
+  sequelize
 });
 
 Major.belongsTo(University, {foreignKey: "uniId"});
 
 export default Major;
+

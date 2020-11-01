@@ -1,4 +1,5 @@
 import * as NodeVault from "node-vault";
+import deasync = require( "deasync");
 
 class Config {
   public DB_USER!: string;
@@ -9,30 +10,47 @@ class Config {
   public ADMIN_EMAILS: string[] = [];
 }
 
-let config: Config | null = null;
+function deasyncPromise<T>(promise: Promise<T>): T | null {
+  let result: T | null = null;
+  let error = null;
+  let done = false;
+  promise.then(res => {
+    result = res;
+    done = true;
+  })
+    .catch(err => {
+      error = err;
+      done = true;
+    });
+  while (!done) {
+    deasync.runLoopOnce();
+  }
+  if (error) {
+    throw error;
+  }
+  return result;
+}
 
-export default async (): Promise<Config> => {
-  if (config != null) {
-    return config;
-  }
-  try {
-    const conf = require("../config.json");
-    config = conf;
-    return conf;
-  } catch (e) {
-    const vaultClient = NodeVault({
-      endpoint: "https://vault.nush.app",
-    });
-    const token = (await vaultClient.userpassLogin({
-      username: "uni-db",
-      password: process.env.VAULT_PASSWORD
-    })).auth.client_token;
-    const secretsClient = NodeVault({
-      endpoint: "https://vault.nush.app",
-      token
-    });
-    const conf = (await secretsClient.read("apps/data/uni-db")).data;
-    config = conf;
-    return conf;
-  }
-};
+let config: Config | null;
+try {
+  config = require("../config.json");
+} catch (e) {
+  const vaultClient = NodeVault({
+    endpoint: "https://vault.nush.app",
+  });
+  const token = deasyncPromise(vaultClient.userpassLogin({
+    username: "uni-db",
+    password: process.env.VAULT_PASSWORD
+  })).auth.client_token;
+  const secretsClient = NodeVault({
+    endpoint: "https://vault.nush.app",
+    token
+  });
+  config = deasyncPromise(secretsClient.read("apps/data/uni-db")).data.data;
+}
+
+if (config == null) {
+  throw "Config cannot be null";
+}
+
+export default config as Config;
