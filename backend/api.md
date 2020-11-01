@@ -86,35 +86,6 @@ filter[gradCap][1]=4.5
 ```
 will show students who applied to NUS with a CAP of 5.0 or 4.5.
 
-
-## Creating applications
-> HTTP: `POST /api/admin/applications/create`   
-> Admin required: Yes
-
-Form data:
-```
-"studentId": string,
-"universityId":  int,
-"majorId": int,
-"status":  string,
-"informant": string = "",
-"dateInformed":date = null,
-"comment": string = "",
-```
-`studentId` must match `/20[0-9]{2}a[0-9]{3}/` and map to a valid student in the database.  
-
-## Creating students
-> HTTP: `POST /api/admin/students/create`   
-> Admin required: Yes
-
-Form data:
-```
-"studentId": string,
-"gradCap": double
-```
-`studentId` must match `/20[0-9]{2}a[0-9]{3}/`  
-`gradCap` must be in the range `[0, 5]`
-
 ## Fetching universities
 > HTTP: `GET /api/universities`   
 > Admin required: No
@@ -159,3 +130,62 @@ Example response:
   }
 ]
 ```
+
+## Fetching summary of data
+> HTTP: `GET /api/summary`   
+> Admin required: No
+
+Returns a list of values for each application column.  
+Has the same filter syntax as `/api/applications`.  
+Use `exclude`/`include` query parameters to only return certain fields.  
+`..` indicates ranges.  
+For example, `[1,"..",5]` is equivalent to `[1,2,3,4,5]`.  
+Example response:
+```
+{
+    "years": [2011,"..",2020],
+    "caps":[30,"..",50],
+    "studentIds": [
+        {
+            "year":"2011",
+            "ids":[1,"..",300]
+        }
+    ],
+    "majors": [1,"..",100],
+    "universities: [1,"..",100],
+    "countries": ["USA","New Zealand","Singapore"],
+    "statuses":["Offered - Accepted", "Rejected - Final"],
+    "categories":["Business", "Computing", "Biology"]
+}
+```
+Note: `caps` are multiplied by 10 to avoid floating-point errors.
+
+
+## Creating applications
+> HTTP: `POST /api/admin/applications/create`   
+> Admin required: Yes
+
+Form data:
+```
+"studentId": string,
+"universityId":  int,
+"majorId": int,
+"status":  string,
+"informant": string = "",
+"dateInformed":date = null,
+"comment": string = "",
+```
+`studentId` must match `/20[0-9]{2}a[0-9]{3}/` and map to a valid student in the database.  
+
+## Creating students
+> HTTP: `POST /api/admin/students/create`   
+> Admin required: Yes
+
+Form data:
+```
+"studentId": string,
+"gradCap": double
+```
+`studentId` must match `/20[0-9]{2}a[0-9]{3}/`  
+`gradCap` must be in the range `[0, 5]`
+

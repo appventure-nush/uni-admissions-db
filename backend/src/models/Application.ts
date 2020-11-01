@@ -17,6 +17,7 @@ export interface ApplicationAttributes {
   dateInformed: Date | null;
   comment: string;
 }
+
 class Application extends Sequelize.Model implements ApplicationAttributes {
   comment!: string;
   dateInformed!: Date | null;
@@ -69,6 +70,7 @@ Application.init({
   tableName: "applications",
   sequelize
 });
+
 
 Application.belongsTo(University, {foreignKey: "uniId"});
 Application.belongsTo(Major, {foreignKey: "majorId"});

@@ -10,7 +10,7 @@ export interface MajorAttributes {
   uniId: number;
 }
 
-class Major extends Sequelize.Model implements MajorAttributes{
+class Major extends Sequelize.Model implements MajorAttributes {
   public majorId!: number;
   public majorName!: string;
   public category!: string;
@@ -41,6 +41,8 @@ Major.init({
   tableName: "majors",
   sequelize
 });
+
 Major.belongsTo(University, {foreignKey: "uniId"});
 
 export default Major;
+

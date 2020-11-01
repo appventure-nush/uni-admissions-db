@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 
 router.get("/api/applications", (req, res, next) => {
   (async () => {
-    const admin = (req as AuthenticatedRequest).admin
+    const admin = (req as AuthenticatedRequest).admin;
     const applications = await ApplicationsController.getApplications(
       pagination.parseParams(req),
       filtering.parseParams(req, admin),
@@ -30,25 +30,50 @@ router.get("/api/applications", (req, res, next) => {
     pretty(req, res, applications);
   })()
     .catch(e => {
-      next(e)
-    })
+      next(e);
+    });
 });
-
+router.get("/api/summary", (req, res, next) => {
+  (async () => {
+    const admin = (req as AuthenticatedRequest).admin;
+    const data: any = await ApplicationsController.summarize(filtering.parseParams(req, admin), req.query.full === "true");
+    const validKeys = Object.keys(data);
+    if(req.query.include && req.query.exclude){
+      throw "Cannot use both include and exclude";
+    }
+    if(req.query.include){
+      const include = req.query.include as string[];
+      for(const key of validKeys){
+        if(!include.includes(key)){
+          delete data[key];
+        }
+      }
+    }
+    if(req.query.exclude){
+      const exclude = req.query.exclude as string[];
+      for(const key of validKeys){
+        if(exclude.includes(key)){
+          delete data[key];
+        }
+      }
+    }
+    pretty(req, res, data);
+  })()
+    .catch(e => {
+      next(e);
+    });
+});
 router.get("/api/universities", async (req, res) => {
   const universities = await UniversitiesController.getUniversities();
   pretty(req, res, universities);
 });
 
 router.get("/api/majors", async (req, res) => {
-  const uniId = req.query.uniId == undefined ? undefined : parseInt(req.query.uniId.toString())
+  const uniId = req.query.uniId == undefined ? undefined : parseInt(req.query.uniId.toString());
   const majors = await MajorsController.getMajors(uniId);
   pretty(req, res, majors);
 });
 
-router.get("/api/applications/avgcap", async (req, res) => {
-  const applications = await ApplicationsController.getAverageCap();
-  res.json(applications);
-});
 
 export default router;
 

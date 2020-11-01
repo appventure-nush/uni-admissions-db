@@ -7,11 +7,13 @@ export interface UniversityAttributes {
   uniName: string;
   country: string;
 }
-class University extends Sequelize.Model implements UniversityAttributes{
+
+class University extends Sequelize.Model implements UniversityAttributes {
   public uniId!: number;
   public uniName!: string;
   public country!: string;
 }
+
 University.init({
   uniId: {
     type: Sequelize.INTEGER,
@@ -26,8 +28,8 @@ University.init({
     type: Sequelize.STRING,
     allowNull: false,
   },
-},{
-  tableName:"universities",
+}, {
+  tableName: "universities",
   sequelize
 });
 

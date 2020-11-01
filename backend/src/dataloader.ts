@@ -61,10 +61,10 @@ class ApplicationsRaw {
   public status!: {
     mainStatus: string,
     suppStatus: string
-  }
+  };
   public informant!: string;
   public dateInformed!: string;
-  public uniId!: number
+  public uniId!: number;
 }
 
 const applicationsRaw = require("../applications.json") as Array<ApplicationsRaw>;
@@ -88,7 +88,7 @@ const students = Object.entries(require("../students.json") as Map<string, {
   gradCap: a[1].cap,
 }));
 
-const majorsRaw = require("../majors.json") as Map<String, number>;
+const majorsRaw = require("../majors.json") as Map<string, number>;
 
 const majorsSet = new Set();
 
@@ -114,11 +114,10 @@ const applications = applicationsRaw.map((a) => {
   };
 });
 
-// @ts-ignore
-let majors = Array.from(majorsSet).map((a: string) => JSON.parse(a)) as Array<{
+let majors = Array.from(majorsSet).map((a: any) => JSON.parse(a.toString())) as Array<{
   majorNameIndex: number,
-  majorName: String,
-  category: String,
+  majorName: string,
+  category: string,
   uniId: number,
   majorId?: number
 }>;
@@ -127,11 +126,8 @@ for (const application of applications) {
   application.majorId = majors.findIndex((major) => major.majorNameIndex === application.majorId
     && major.uniId === application.uniId) + 1;
 }
-let i = 1;
 majors = majors.map((major) => {
-  major.majorId = i;
   delete major.majorNameIndex;
-  i += 1;
   return major;
 });
 
