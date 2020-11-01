@@ -28,11 +28,10 @@ router.post("/api/admin/applications/bulkCreate", upload.single("file"), async (
   if (result.error) {
     return res.json(result);
   }
-  res.json({
+  return res.json({
     error: false,
     message: "ok"
   });
-  return;
 });
 router.post("/api/admin/applications/create", async (req, res) => {
   const {body} = req;

@@ -78,8 +78,8 @@ export default async function (file: Buffer): Promise<{ error: boolean, message:
           }
           const studentId = cellValue as string;
           const existingStudent = await Students.getStudentById(studentId);
-          if (existingStudent == null) {
-            const lastStudentId = students[students.length - 1]?.studentId;
+          const lastStudentId = students[students.length - 1]?.studentId;
+          if (existingStudent == null && lastStudentId != studentId) {
             if (!(lastStudentId && lastStudentId.substring(0, 4) == studentId.substring(0, 4) && parseInt(lastStudentId.substring(5, 8)) + 1 == parseInt(studentId.substring(5, 8)))) {
               if (!await Students.checkStudentId(studentId)) {
                 return {
@@ -156,12 +156,12 @@ export default async function (file: Buffer): Promise<{ error: boolean, message:
           break;
         }
         case 6: {
-          if(cellValue instanceof Date){
+          if (cellValue instanceof Date) {
             application.dateInformed = cellValue;
           }
           break;
         }
-        case 7:{
+        case 7: {
           application.comment = cellValue as string;
           break;
         }
