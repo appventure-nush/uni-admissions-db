@@ -98,6 +98,11 @@ export default Vue.extend({
           route: "/new-record",
           icon: "mdi-table-plus",
         },
+        {
+          name: "Bulk create applications",
+          route: "/bulk-create",
+          icon: "mdi-table-large-plus",
+        },
       ];
     },
   },
