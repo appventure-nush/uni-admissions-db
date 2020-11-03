@@ -3,7 +3,7 @@ import Major from "@/types/major";
 
 export default {
   async getSummary(fields: string[] = []) {
-    let queryString = "";
+    let queryString = "full=true";
     for (let i = 0; i < fields.length; i++) {
       queryString += `&include[${i}]=${fields[i]}`
     }

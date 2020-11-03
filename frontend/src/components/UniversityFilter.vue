@@ -20,10 +20,13 @@ import config from '@/config';
 
 export default Vue.extend({
   name: 'UniversityFilter',
+  props: {
+    uniId: Number,
+  },
   data() {
     return {
       universities: [],
-      universityId: 0
+      universityId: this.uniId
     };
   },
   mounted() {
@@ -33,6 +36,9 @@ export default Vue.extend({
           text: it.uniName,
           value: it.uniId
         }));
+        if (this.uniId != 0) {
+          this.$emit('update', this.$data.universities.find((it: any) => it.value === this.uniId));
+        }
       });
   },
   methods: {

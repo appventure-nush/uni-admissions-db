@@ -1,10 +1,11 @@
 <template>
   <div>
     <UniversityFilter
+      :uni-id="this.majorInfo == null ? 0 : this.majorInfo.uniId"
       @update="$data.university = $event"
     />
     <v-autocomplete
-      :disabled="university==null"
+      :disabled="university==null && majorId==null"
       label="Select major"
       v-model="majorId"
       :items="majors"
@@ -24,11 +25,14 @@ import api from "@/api";
 
 export default Vue.extend({
   name: 'MajorFilter',
+  props: {
+    majorInfo: Object,
+  },
   data() {
     return {
       university: null,
       major: null,
-      majorId: null,
+      majorId: this.majorInfo?.majorId,
       majors: [],
     };
   },
@@ -41,12 +45,17 @@ export default Vue.extend({
           value: major.majorId,
         };
       });
+      // uni id changed
+      if (uniId != this.majorInfo?.uniId) {
+        this.$data.majorId = null;
+        this.update();
+      }
     }
   },
   methods: {
     update() {
       this.$emit("update", {
-        uniId: this.$data.university.value,
+        uniId: this.$data.university?.value,
         majorId: this.$data.majorId,
       })
     }

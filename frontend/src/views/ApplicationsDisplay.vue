@@ -30,7 +30,7 @@
 <script lang="ts">
 import Vue from "vue";
 import {DataOptions, DataTableHeader} from "vuetify";
-import Application, {ApplicationTableRow} from "../types/application";
+import Application, {ApplicationTableRow} from "@/types/application";
 import Paginated from "@/types/paginated";
 import config from "@/config";
 
