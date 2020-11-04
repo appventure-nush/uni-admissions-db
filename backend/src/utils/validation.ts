@@ -1,6 +1,7 @@
 import StudentsController from "../controllers/Students";
 import UniversitiesController from "../controllers/University";
 import MajorsController from "../controllers/Major";
+import constants from "./constants";
 
 export default {
   async validateApplication(application: any) {
@@ -44,6 +45,12 @@ export default {
       return {
         error: true,
         message: "Status cannot be empty",
+      };
+    }
+    if (!constants.statuses.includes(status)) {
+      return {
+        error: true,
+        message: "Invalid status",
       };
     }
     return {
