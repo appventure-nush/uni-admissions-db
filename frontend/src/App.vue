@@ -46,7 +46,7 @@
       </v-toolbar-title>
     </v-app-bar>
 
-    <v-content>
+    <v-main>
       <v-container fluid>
         <template v-if="!isSignedIn">
           <v-row>
@@ -61,13 +61,14 @@
         </template>
       </v-container>
       <router-view v-if="isSignedIn"/>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import User from "./types/user";
+import api from "@/api";
 
 const clientId = "ad4c43c7-eaff-45f7-b7b4-fedc6bcb85ca";
 export default Vue.extend({
@@ -79,7 +80,20 @@ export default Vue.extend({
       name: "",
       email: "",
     } as User,
+    admin: false,
     drawerShown: false,
+    adminRoutes: [
+      {
+        name: "Create new application",
+        route: "/new-record",
+        icon: "mdi-table-plus",
+      },
+      {
+        name: "Bulk create applications",
+        route: "/bulk-create",
+        icon: "mdi-table-large-plus",
+      },
+    ]
   }),
   computed: {
     routes(): Array<{
@@ -87,23 +101,17 @@ export default Vue.extend({
       route: string,
       icon: string
     }> {
-      return [
+      const base = [
         {
           name: "View applications",
           route: "/",
           icon: "mdi-file-table-box",
-        },
-        {
-          name: "Create new application",
-          route: "/new-record",
-          icon: "mdi-table-plus",
-        },
-        {
-          name: "Bulk create applications",
-          route: "/bulk-create",
-          icon: "mdi-table-large-plus",
-        },
+        }
       ];
+      if (this.$data.admin) {
+        base.push(...this.$data.adminRoutes);
+      }
+      return base;
     },
   },
   methods: {
@@ -141,6 +149,11 @@ export default Vue.extend({
   },
   mounted() {
     this.handleLogin();
+    if (this.$data.user) {
+      api.checkAdmin().then(admin =>
+        this.$data.admin = admin
+      );
+    }
   },
 });
 </script>

@@ -5,8 +5,7 @@
         New application
         {{ $data.studentId }}
       </v-card-title>
-      <div
-        class="ma-4">
+      <div class="ma-4">
         <CreateApplication
           ref="form"
           @submit="createApplication($event)"
@@ -45,26 +44,6 @@ export default Vue.extend({
   data: function () {
     return {
       result: null,
-      application: {
-        id: 1,
-        Student: {
-          studentId: "2020a001",
-          gradCap: 5
-        },
-        Major: {
-          "majorId": 1,
-          "majorName": "Business Admin (Accountancy) & Communications & New Media",
-          "category": "Unknown",
-          "uniId": 28
-        },
-        University: {
-          "uniId": 28,
-          "uniName": "National University of Singapore",
-          "country": "Singapore"
-        },
-        status: "Offered",
-        comment: ""
-      } as Application
     }
   },
   methods: {

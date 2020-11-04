@@ -1,5 +1,6 @@
 import config from "@/config";
 import Major from "@/types/major";
+import Application from "@/types/application";
 
 export default {
   async getSummary(fields: string[] = []) {
@@ -18,14 +19,20 @@ export default {
       credentials: "include",
     })).json()
   },
-  async sendPost(url: string, data: object){
+  async sendPost(url: string, data: object) {
     return (await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(data)
-      })).json();
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(data)
+    })).json();
+  },
+  async checkAdmin(): Promise<boolean> {
+    const applications = await (await fetch(`${config.api}/api/applications`, {
+      credentials: "include",
+    })).json();
+    return applications.data[0].comment !== undefined
   }
 }
