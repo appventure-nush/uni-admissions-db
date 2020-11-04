@@ -72,7 +72,7 @@ export default Vue.extend({
       type: Boolean,
       default: true,
     },
-    applicationData: Application,
+    applicationData: Object,
   },
   data() {
     return {

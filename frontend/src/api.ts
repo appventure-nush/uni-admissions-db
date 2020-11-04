@@ -1,6 +1,9 @@
 import config from "@/config";
 import Major from "@/types/major";
-import Application from "@/types/application";
+import University from "@/types/university";
+
+let universitiesCache: University[] | null = null;
+let majorsCache: Map<number, Major[]> = new Map();
 
 export default {
   async getSummary(fields: string[] = []) {
@@ -8,16 +11,22 @@ export default {
     for (let i = 0; i < fields.length; i++) {
       queryString += `&include[${i}]=${fields[i]}`
     }
-
     return (await fetch(`${config.api}/api/summary?${queryString}`, {
       credentials: "include",
     })).json()
   },
   async getMajors(uniId: number = -1): Promise<Major[]> {
+    if (uniId != -1 && majorsCache.has(uniId)) {
+      return majorsCache.get(uniId) as Major[];
+    }
     const queryString = uniId == -1 ? "" : `?uniId=${uniId}`;
-    return (await fetch(`${config.api}/api/majors${queryString}`, {
+    const res: Major[] = await (await fetch(`${config.api}/api/majors${queryString}`, {
       credentials: "include",
-    })).json()
+    })).json();
+    if (uniId != -1) {
+      majorsCache.set(uniId, res);
+    }
+    return res;
   },
   async sendPost(url: string, data: object) {
     return (await fetch(url, {
@@ -34,5 +43,17 @@ export default {
       credentials: "include",
     })).json();
     return applications.data[0].comment !== undefined
+  },
+  async getUniversities(): Promise<University[]> {
+    if (universitiesCache != null) {
+      return universitiesCache;
+    }
+    universitiesCache = await (await fetch(`${config.api}/api/universities`, {
+      credentials: "include",
+    })).json();
+    if (universitiesCache == null) {
+      throw "Universities cannot be null";
+    }
+    return universitiesCache;
   }
 }

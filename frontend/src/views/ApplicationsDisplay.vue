@@ -22,7 +22,46 @@
         :loading-text="fetchError ? fetchError : 'Loading...'"
         :options.sync="options"
         :server-items-length="totalItems"
-        item-key="id"/>
+        item-key="id"
+        @contextmenu:row="triggerMenu"/>
+
+      <v-menu
+        v-model="menu.show"
+        :position-x="menu.x"
+        :position-y="menu.y"
+        absolute
+        offset-y
+      >
+        <v-list
+          dense
+          v-if="selectedApplication">
+          <v-subheader>
+            Application {{ selectedApplication.id }} to {{ selectedApplication.University.uniName }}
+          </v-subheader>
+          <v-dialog
+            v-model="menu.editing"
+            @click:outside="menu.show = false"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-list-item
+                v-bind="attrs"
+                v-on="on">
+                <v-list-item-icon>
+                  <v-icon>mdi-pencil</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>
+                  Edit
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+            <EditApplicationForm
+              :key="selectedApplication.id"
+              :application="selectedApplication"
+              @close="menu.show = menu.editing = false; reload()"
+            />
+          </v-dialog>
+        </v-list>
+      </v-menu>
     </v-card>
   </v-container>
 </template>
@@ -33,9 +72,13 @@ import {DataOptions, DataTableHeader} from "vuetify";
 import Application, {ApplicationTableRow} from "@/types/application";
 import Paginated from "@/types/paginated";
 import config from "@/config";
+import EditApplicationForm from "@/views/EditApplicationForm.vue";
+import api from "@/api";
+
 
 export default Vue.extend({
   name: "ApplicationsDisplay",
+  components: {EditApplicationForm},
   data() {
     return {
       headers: [
@@ -81,7 +124,13 @@ export default Vue.extend({
       fetchError: false,
       fetchedData: [] as Array<Application>,
       showColumns: ["id", "studentId", "uniName", "gradCap", "majorName", "category", "country", "status"],
-      filterColumn: ""
+      menu: {
+        show: false,
+        x: 0,
+        y: 0,
+        editing: false,
+      },
+      selectedApplication: null as Application | null,
     };
   },
   watch: {
@@ -132,11 +181,8 @@ export default Vue.extend({
       });
     },
   },
-  mounted() {
-    this.fetchData().then((data) => {
-      this.fetchedData = data.data;
-      this.totalItems = data.count;
-    });
+  async mounted() {
+    await this.reload()
   },
   methods: {
     async fetchData(): Promise<Paginated<Application>> {
@@ -167,6 +213,38 @@ export default Vue.extend({
           this.fetchError = e.toString();
           return null;
         });
+    },
+    async reload() {
+      await this.fetchData().then((data) => {
+        this.fetchedData = data.data;
+        this.totalItems = data.count;
+      });
+    },
+    async triggerMenu(event: MouseEvent, item: any) {
+      event.preventDefault();
+      this.$data.menu.show = false;
+      this.$data.menu.x = event.clientX;
+      this.$data.menu.y = event.clientY;
+      const application = this.$data.fetchedData.find(
+        (application: Application) => application.id === item.item.id
+      ) as Application;
+      const universityId = (await api.getUniversities()).find(university =>
+        university.uniName == application.University.uniName)?.uniId;
+      if (!universityId) {
+        throw "Invalid university!";
+      }
+      const majorId = (await api.getMajors(universityId)).find(
+        major => major.majorName == application.Major.majorName)?.majorId;
+      if (!majorId) {
+        throw "Invalid university!";
+      }
+      application.University.uniId = universityId;
+      application.Major.majorId = majorId;
+      application.Major.uniId = universityId;
+      this.$data.selectedApplication = application;
+      this.$nextTick(function () {
+        this.$data.menu.show = true;
+      });
     },
   },
 });

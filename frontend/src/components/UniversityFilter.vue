@@ -16,7 +16,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import University from '@/types/university.d';
-import config from '@/config';
+import api from "@/api";
 
 export default Vue.extend({
   name: 'UniversityFilter',
@@ -30,7 +30,7 @@ export default Vue.extend({
     };
   },
   mounted() {
-    this.fetchUniversities()
+    api.getUniversities()
       .then((universities: University[]) => {
         this.$data.universities = universities.map(it => ({
           text: it.uniName,
@@ -52,24 +52,6 @@ export default Vue.extend({
         .join('');
       return acronym.includes(queryText.toUpperCase());
     },
-    async fetchUniversities(): Promise<University[]> {
-      return fetch(`${config.api}/api/universities`, {
-        credentials: 'include',
-      })
-        .then((a) => a.text())
-        .then((text) => {
-          try {
-            return JSON.parse(text);
-          } catch (e) {
-            console.log(e);
-          }
-          return null;
-        })
-        .catch((e) => {
-          console.log(e);
-          return null;
-        });
-    }
   }
 });
 </script>
