@@ -7,10 +7,10 @@ import columns from "./columns";
 export default {
   parseParams(req: Request, admin: boolean): Order | undefined {
     if (req.query.sortBy == undefined) {
-      return undefined;
+      return [["id", "desc"]];
     }
     const sortBy = req.query.sortBy as unknown as Array<SortParams>;
-    return sortBy.map(sort => {
+    const results= sortBy.map(sort => {
       const column = columns.find(col => col.name == sort.param);
       if (column == undefined) {
         return [sort.param, sort.order];
@@ -23,5 +23,9 @@ export default {
       }
       return [column.table, sort.param, sort.order];
     });
+    if (results.find(result => result[0] != "id") == undefined) {
+      results.push(["id", "desc"]);
+    }
+    return results as Order;
   },
 };
