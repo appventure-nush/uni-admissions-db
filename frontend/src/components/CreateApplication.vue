@@ -82,7 +82,7 @@ export default Vue.extend({
         majorId: this.applicationData.Major.majorId
       } : null,
       status: this.applicationData?.status,
-      statuses: ["Offered", "Rejected", "Waitlist", "Applied", "Withdrawn"],
+      statuses: ["Offered", "Rejected", "Waitlist", "Applied", "Withdrawn", "Unknown"],
       newStudent: false,
       gradCap: 4,
       comment: this.applicationData?.comment,

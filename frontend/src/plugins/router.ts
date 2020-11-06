@@ -3,6 +3,7 @@ import VueRouter, {RouteConfig} from "vue-router";
 import ApplicationsDisplay from "../views/ApplicationsDisplay.vue";
 import NewApplicationForm from "@/views/NewApplicationForm.vue";
 import BulkCreate from "@/views/BulkCreate.vue";
+import NewMajor from "@/views/NewMajor.vue";
 
 Vue.use(VueRouter);
 
@@ -18,6 +19,10 @@ const routes: Array<RouteConfig> = [
   {
     path: "/bulk-create",
     component: BulkCreate
+  },
+    {
+    path: "/new-major",
+    component: NewMajor
   }
 ];
 

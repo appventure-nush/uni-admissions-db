@@ -29,7 +29,7 @@
               dense
               class="mx-4"
               type="success">
-              Application successfully created
+              Applications successfully created
             </v-alert>
             <v-alert
               v-if="result && result.error"
@@ -54,7 +54,6 @@ import config from "@/config";
 
 export default Vue.extend({
   name: "BulkCreate",
-  components: {MajorFilter, UniversityFilter},
   data() {
     return {
       inputFile: null,

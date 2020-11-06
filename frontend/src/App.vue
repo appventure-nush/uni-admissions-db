@@ -93,6 +93,11 @@ export default Vue.extend({
         route: "/bulk-create",
         icon: "mdi-table-large-plus",
       },
+       {
+        name: "Create new major",
+        route: "/new-major",
+        icon: "mdi-folder-plus",
+      },
     ]
   }),
   computed: {
