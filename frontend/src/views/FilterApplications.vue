@@ -33,11 +33,14 @@
                 :name="Math.random()"
                 autocomplete="new-password"
                 v-model="filterParams[column.value]"
-                v-if="!range.includes(column.value) && !noFilter.includes(column.value)"
-                :disabled="!show.includes(column.value)"
+                v-if="summary && !range.includes(column.value) && !noFilter.includes(column.value)"
+                :disabled="!show.includes(column.value) ||
+                    (column.value === 'majorName' && summary.universities.length > 1)"
+                hint="Please select a university first"
+                :persistent-hint="column.value === 'majorName' && summary.universities.length > 1"
                 :label="column.text"
                 :filter="column.value === 'uniName' ? universityFilter : undefined"
-                :items="getFilterItems(column.value)"
+                :items="column.value === 'majorName' ? currentMajors : getFilterItems(column.value)"
                 chips
                 clearable
                 deletable-chips
@@ -88,7 +91,7 @@ export default Vue.extend({
       summary: null,
       filterParams: {},
       universities: [] as University[],
-      majors: [] as Major[],
+      majors: new Map<Number, Major[]>(),
     };
   },
   mounted() {
@@ -97,9 +100,6 @@ export default Vue.extend({
       this.$data.filterParams.year = [res.years[0], res.years[res.years.length - 1]];
       this.$data.filterParams.gradCap = [res.caps[0], res.caps[res.caps.length - 1]];
     });
-    api.getMajors().then(res => {
-      this.$data.majors = res;
-    })
     api.getUniversities().then(res => {
       this.$data.universities = res;
     })
@@ -111,6 +111,20 @@ export default Vue.extend({
       this.$data.summary = await (await fetch(`${config.api}/api/summary?${queryString}`, {
         credentials: "include",
       })).json();
+    }
+  },
+  computed: {
+    currentMajors() {
+      if (this.$data.summary.universities.length == 1) {
+        const uni = this.$data.summary.universities[0];
+        if (this.$data.majors.has(uni)) {
+          return this.$data.majors.get(uni).map((major: Major) => major.majorName);
+        }
+        api.getMajors(uni).then(majors => {
+          this.$data.majors.set(uni, majors);
+        })
+      }
+      return [];
     }
   },
   methods: {
@@ -188,15 +202,7 @@ export default Vue.extend({
           continue;
         }
         if (this.$data.range.includes(key)) {
-          // Range support is yet to be added in backend
-          if (key == "gradCap") {
-            continue;
-          }
-          let c = 0;
-          for (let i = filter[key][0]; i <= filter[key][1]; i++) {
-            out += `&filter[${key}][${c}]=${i}`
-            c++;
-          }
+          out += `&filter[${key}][0]=${filter[key][0]}&filter[${key}][1]=..&filter[${key}][2]=${filter[key][1]}`
           continue;
         }
         if (key == "uniName") {
