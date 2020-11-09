@@ -29,6 +29,11 @@ class Application extends Sequelize.Model implements ApplicationAttributes {
 }
 
 Application.init({
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   studentId: {
     type: Sequelize.CHAR(8),
     references: {

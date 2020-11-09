@@ -48,17 +48,23 @@ router.post("/api/admin/applications/create", async (req, res) => {
 
 router.post("/api/admin/applications/edit", async (req, res) => {
   const {body} = req;
-  if (!body.id || !(body.id instanceof Number)) {
+  if (!body.id || typeof body.id != "number") {
     return res.json({
       error: true,
       message: "Please specify application number."
     });
   }
-  const existingApplication = await ApplicationsController.getApplicationById(body.name);
-  if(existingApplication == null){
+  const existingApplication = await ApplicationsController.getApplicationById(body.id);
+  if (existingApplication == null) {
     return res.json({
       error: true,
       message: "Application does not exist"
+    });
+  }
+  if (existingApplication.studentId !== body.studentId) {
+    return res.json({
+      error: true,
+      message: "Student ID does not match"
     });
   }
   const application = await validation.validateApplication(body);

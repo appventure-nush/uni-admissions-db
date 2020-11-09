@@ -1,44 +1,15 @@
-// const universities = [{
-//   name: "NUS",
-//   country: "Singapore",
-// }, {
-//   name: "NTU",
-//   country: "Singapore",
-// }, {
-//   name: "MIT",
-//   country: "United States",
-// }, {
-//   name: "CMU",
-//   country: "United States",
-// }];
-//
-// const majors = [{
-//   uniName: "NUS",
-//   majorName: "Data Science and Analytics",
-//   category: "Computing",
-// }, {
-//   uniName: "CMU",
-//   majorName: "Computer Science",
-//   category: "Computing",
-// }];
-//
-// const students = [...Array(2000).keys()].map((i) => ({
-//   studentId: `a${i}`,
-//   gradCap: parseFloat((Math.random() * (5 - 2) + 2).toFixed(1)),
-// }));
-//
-// const applications = [...Array(1440 * 10).keys()].map(() => {
-//   const major = majors[(Math.random() > 0.5) + 0];
-//   return {
-//     studentId: `a${Math.floor(Math.random() * 2000)}`,
-//     majorName: major.majorName,
-//     uniName: major.uniName,
-//     status: "Offered - Accepted",
-//     comment: null,
-//     informant: "allan",
-//     dateInformed: null,
-//   };
-// });
+import UniversityTable from "./models/University";
+
+import Student from "./models/Student";
+
+import sequelize from "./models";
+
+
+import Major from "./models/Major";
+
+
+import Application from "./models/Application";
+import constants from "./utils/constants";
 
 import UniversityTable from "./models/University";
 
@@ -123,6 +94,37 @@ let majors = Array.from(majorsSet).map((a: any) => JSON.parse(a.toString())) as 
 }>;
 
 for (const application of applications) {
+  application.status = application.status.trim();
+  const split = application.status.split(" - ");
+  if (split.length == 2) {
+    application.status = split[0].trim();
+    if (application.comment.length) {
+      application.comment = split[1].trim() + "; " + application.comment;
+    } else {
+      application.comment = split[1].trim();
+    }
+  }
+  if (!constants.statuses.includes(application.status)) {
+    const status = application.status.toLowerCase();
+    if (application.status == "") {
+      application.status = "Unknown";
+    } else if (status.startsWith("waitlist")) {
+      application.status = "Waitlist";
+    } else if (status.startsWith("interview")) {
+      application.status = "Applied";
+      if (application.comment.length) {
+        application.comment = "Interview; " + application.comment;
+      } else {
+        application.comment = "Interview";
+      }
+    } else if (status.startsWith("with")) {
+      application.status = "Withdrawn";
+    } else if (status.startsWith("offer")) {
+      application.status = "offered";
+    } else {
+      console.log("Unknown:", application.status);
+    }
+  }
   application.majorId = majors.findIndex((major) => major.majorNameIndex === application.majorId
     && major.uniId === application.uniId) + 1;
 }
@@ -143,7 +145,6 @@ setTimeout(async () => {
   await Application.sync({force: true});
 
   await UniversityTable.bulkCreate(universities.map((university) => ({
-    id: university.id,
     uniName: university.name,
     country: university.country,
   })));
