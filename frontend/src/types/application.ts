@@ -2,15 +2,15 @@ import Student from "@/types/student";
 import Major from "@/types/major";
 import University from "@/types/university";
 
-export default interface Application {
-  id: number,
-  Student: Student,
-  Major: Major,
-  University: University,
-  status: string,
-  informant: string,
-  dateInformed: string | null,
-  comment: string
+export default class Application {
+  id!: number;
+  Student!: Student;
+  Major!: Major;
+  University!: University;
+  status!: string;
+  informant!: string;
+  dateInformed!: string | null;
+  comment!: string;
 }
 
 export interface ApplicationTableRow {

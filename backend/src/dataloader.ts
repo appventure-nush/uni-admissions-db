@@ -1,14 +1,3 @@
-import UniversityTable from "./models/University";
-
-import Student from "./models/Student";
-
-import sequelize from "./models";
-
-
-import Major from "./models/Major";
-
-
-import Application from "./models/Application";
 import constants from "./utils/constants";
 
 import UniversityTable from "./models/University";
@@ -120,7 +109,7 @@ for (const application of applications) {
     } else if (status.startsWith("with")) {
       application.status = "Withdrawn";
     } else if (status.startsWith("offer")) {
-      application.status = "offered";
+      application.status = "Offered";
     } else {
       console.log("Unknown:", application.status);
     }
