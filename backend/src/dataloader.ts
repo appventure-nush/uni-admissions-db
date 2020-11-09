@@ -106,7 +106,7 @@ for (const application of applications) {
     } else if (status.startsWith("with")) {
       application.status = "Withdrawn";
     } else if (status.startsWith("offer")) {
-      application.status = "offered";
+      application.status = "Offered";
     } else {
       console.log("Unknown:", application.status);
     }
