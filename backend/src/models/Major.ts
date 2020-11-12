@@ -6,14 +6,14 @@ import Sequelize = require("sequelize");
 export interface MajorAttributes {
   majorId: number;
   majorName: string;
-  category: string;
+  category: string[];
   uniId: number;
 }
 
 class Major extends Sequelize.Model implements MajorAttributes {
   public majorId!: number;
   public majorName!: string;
-  public category!: string;
+  public category!: string[];
   public uniId!: number;
 }
 
@@ -28,7 +28,7 @@ Major.init({
     allowNull: false,
   },
   category: {
-    type: Sequelize.STRING,
+    type: Sequelize.ARRAY(Sequelize.STRING)
   },
   uniId: {
     type: Sequelize.INTEGER,

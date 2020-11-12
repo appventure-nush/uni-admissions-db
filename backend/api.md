@@ -18,7 +18,7 @@ The properties returned differ depending on whether the caller has administrator
       "status": "Offered - Declined",
       "Major": {
         "majorName": "Accountancy & Business",
-        "category": "Unknown"
+        "category": ["Unknown"]
       },
       "Student": {
         "studentId": "2012a001",
@@ -119,13 +119,13 @@ Example response:
   {
     "majorId": 1,
     "majorName": "Business Admin (Accountancy) & Communications & New Media",
-    "category": "Unknown",
+    "category": ["Unknown"],
     "uniId": 28
   },
   {
     "majorId": 20,
     "majorName": "Computer Science",
-    "category": "Unknown",
+    "category": ["Unknown"],
     "uniId": 28
   }
 ]

@@ -92,7 +92,7 @@ export default {
     const majorIds: number[] = full ? (await Majors.getMajors(undefined)).map(it => it.majorId) : await queryDistinct("Application", "majorId", conditions);
     const countries: string[] = await queryDistinct("University", "country", conditions);
     const statuses: string[] = await queryDistinct("Application", "status", conditions);
-    const categories: string[] = await queryDistinct("Major", "category", conditions);
+    const categories = [...new Set((await queryDistinct("Major", "category", conditions) as string[][]).flat())];
     for (const id of studentIds) {
       const year = parseInt(id.substring(0, 4));
       if (years.includes(year)) {

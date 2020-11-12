@@ -17,6 +17,17 @@ export default {
   async getStudents() {
     return Student.findAll();
   },
+  async getLastStudent(year: string) {
+    return Student.findAll({
+      where:{
+        studentId: {
+          [Op.startsWith]: year,
+        },
+      },
+      order: [["studentId","DESC"]],
+      limit: 1,
+    });
+  },
   async getGradCaps() {
     return (await Student.findAll({
       // https://github.com/sequelize/sequelize/issues/5475

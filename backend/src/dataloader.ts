@@ -57,7 +57,7 @@ const applications = applicationsRaw.map((a) => {
   majorsSet.add(JSON.stringify({
     majorNameIndex: a.major,
     majorName,
-    category: "Unknown",
+    category: ["Unknown"],
     uniId: a.uniId,
   }));
   return {
