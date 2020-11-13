@@ -21,6 +21,7 @@
           <v-autocomplete
             :disabled="university==null"
             :items="categories"
+            multiple
             v-model="category"
             label="Category"
           />
@@ -67,11 +68,16 @@ export default Vue.extend({
     return {
       category: null,
       majorName: null,
-      categories: ["Unknown"],
+      categories: [],
       university: null,
       result: null,
       errorMessages: []
     };
+  },
+  mounted() {
+    api.getSummary().then(res => {
+      this.$data.categories = res.categories;
+    });
   },
   watch: {
     majorName: async function (val) {
@@ -85,7 +91,6 @@ export default Vue.extend({
           return;
         }
       }
-      console.log(this.$data.errorMessages, this.$data.majorName);
       this.$data.errorMessages = [];
     }
   },
@@ -96,6 +101,7 @@ export default Vue.extend({
         category: this.$data.category,
         uniId: this.$data.university.value
       });
+      await api.getMajors(this.$data.university.value, true);
       if (!this.$data.result.error) {
         (this.$refs.form as HTMLFormElement).reset();
       }

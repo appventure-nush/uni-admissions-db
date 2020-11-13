@@ -132,8 +132,6 @@ export default Vue.extend({
       totalItems: 0,
       options: {
         multiSort: true,
-        sortBy: ["id"],
-        sortDesc: [true],
       } as DataOptions,
       fetchError: false,
       fetchedData: [] as Array<Application>,

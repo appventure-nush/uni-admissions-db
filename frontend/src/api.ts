@@ -15,8 +15,8 @@ export default {
       credentials: "include",
     })).json()
   },
-  async getMajors(uniId: number = -1): Promise<Major[]> {
-    if (uniId != -1 && majorsCache.has(uniId)) {
+  async getMajors(uniId: number = -1, noCache = false): Promise<Major[]> {
+    if (uniId != -1 && majorsCache.has(uniId) && !noCache) {
       return majorsCache.get(uniId) as Major[];
     }
     const queryString = uniId == -1 ? "" : `?uniId=${uniId}`;
