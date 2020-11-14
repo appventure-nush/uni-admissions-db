@@ -75,6 +75,7 @@ export default async function (file: Buffer, randomize = false): Promise<{ error
           const studentId = cellValue as string;
           if (randomize) {
             if (mapping.has(studentId)) {
+              application.studentId = mapping.get(studentId) as string;
               studentExists = true;
               break;
             }
@@ -84,17 +85,20 @@ export default async function (file: Buffer, randomize = false): Promise<{ error
               if (lastStudent.length == 0) {
                 mapping.set(studentId, `${year}a001`);
                 student.studentId = `${year}a001`;
+                application.studentId = `${year}a001`;
               } else {
                 const id = `${year}a` + (parseInt(lastStudent[0].studentId.substring(5, 8)) + 1)
                   .toString().padStart(3, "0");
                 mapping.set(studentId, id);
                 student.studentId = id;
+                application.studentId = id;
               }
             } else {
               const id = `${year}a` + (parseInt(lastStudentId.substring(5, 8)) + 1)
                 .toString().padStart(3, "0");
               mapping.set(studentId, id);
               student.studentId = id;
+              application.studentId = id;
             }
             break;
           }
