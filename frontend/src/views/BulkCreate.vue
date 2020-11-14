@@ -10,6 +10,12 @@
           ref="form"
           lazy-validation
         >
+          <v-switch
+            v-model="randomize"
+            label="Randomize student IDs"
+            hint="Replace student IDs with unique but anonymous identifiers"
+            :persistent-hint="true"
+          />
           <v-file-input
             @change="result=null"
             v-model="inputFile"
@@ -38,6 +44,13 @@
               type="error">
               {{ result.message }}
             </v-alert>
+            <v-btn
+              v-if="randomize && result && !result.error"
+              class="mx-4"
+              @click="downloadFile()"
+              color="primary"
+            >Download mappings
+            </v-btn>
           </v-row>
 
         </v-form>
@@ -48,8 +61,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import UniversityFilter from "@/components/UniversityFilter.vue"
-import MajorFilter from "@/components/MajorFilter.vue";
 import config from "@/config";
 
 export default Vue.extend({
@@ -57,21 +68,33 @@ export default Vue.extend({
   data() {
     return {
       inputFile: null,
-      result: null
+      randomize: false,
+      result: null,
     };
   },
   methods: {
     async submitForm() {
       const formData = new FormData();
       formData.append("file", this.$data.inputFile);
+      if (this.$data.randomize) {
+        formData.append("randomize", "true");
+      }
       this.$data.result = await (await fetch(config.api + "/api/admin/applications/bulkCreate", {
         method: "POST",
         credentials: "include",
         body: formData
       })).json();
-      if(this.$data.result){
+      if (this.$data.result) {
         this.$data.inputFile = null;
       }
+    },
+    downloadFile() {
+      const blob = new Blob([this.$data.result.message], {type: "text/plain"});
+      const download = document.createElement("a");
+      download.download = "mapping.txt";
+      download.href = window.URL.createObjectURL(blob);
+      download.click();
+      download.remove()
     }
   }
 });
