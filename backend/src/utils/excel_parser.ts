@@ -6,7 +6,7 @@ import University from "../controllers/University";
 import Major from "../controllers/Major";
 import constants from "./constants";
 
-export default async function (file: Buffer): Promise<{ error: boolean, message: string }> {
+export default async function (file: Buffer, randomize = false): Promise<{ error: boolean, message: string }> {
   const wb = xlsx.read(file, {
     type: "buffer",
     cellDates: true,
@@ -57,6 +57,7 @@ export default async function (file: Buffer): Promise<{ error: boolean, message:
     }
     counter++;
   }
+  const mapping = new Map<string, string>();
   const applications: ApplicationAttributes[] = [];
   const students: StudentAttributes[] = [];
   for (let i = 2; i < endRow; i++) {
@@ -70,15 +71,44 @@ export default async function (file: Buffer): Promise<{ error: boolean, message:
       switch (columnNo) {
         // Student ID
         case 0 : {
+          const lastStudentId = students[students.length - 1]?.studentId;
+          const studentId = cellValue as string;
+          if (randomize) {
+            if (mapping.has(studentId)) {
+              application.studentId = mapping.get(studentId) as string;
+              studentExists = true;
+              break;
+            }
+            const year = new Date().getFullYear().toString();
+            if (!lastStudentId) {
+              const lastStudent = await Students.getLastStudent(year);
+              if (lastStudent.length == 0) {
+                mapping.set(studentId, `${year}a001`);
+                student.studentId = `${year}a001`;
+                application.studentId = `${year}a001`;
+              } else {
+                const id = `${year}a` + (parseInt(lastStudent[0].studentId.substring(5, 8)) + 1)
+                  .toString().padStart(3, "0");
+                mapping.set(studentId, id);
+                student.studentId = id;
+                application.studentId = id;
+              }
+            } else {
+              const id = `${year}a` + (parseInt(lastStudentId.substring(5, 8)) + 1)
+                .toString().padStart(3, "0");
+              mapping.set(studentId, id);
+              student.studentId = id;
+              application.studentId = id;
+            }
+            break;
+          }
           if (!cellValue.match(/20[0-9]{2}a[0-9]{3}/)) {
             return {
               error: true,
               message: `Student ID on row ${i} (${cellValue}) does not match 20[00-99]a[000-999].`
             };
           }
-          const studentId = cellValue as string;
           const existingStudent = await Students.getStudentById(studentId);
-          const lastStudentId = students[students.length - 1]?.studentId;
           if (existingStudent == null && lastStudentId != studentId) {
             if (!(lastStudentId && lastStudentId.substring(0, 4) == studentId.substring(0, 4) && parseInt(lastStudentId.substring(5, 8)) + 1 == parseInt(studentId.substring(5, 8)))) {
               if (!await Students.checkStudentId(studentId)) {
@@ -171,8 +201,16 @@ export default async function (file: Buffer): Promise<{ error: boolean, message:
   }
   await Student.bulkCreate(students);
   await Application.bulkCreate(applications);
+  let output = "";
+  if(randomize){
+    mapping.forEach((val, key)=>{
+      output += `${key} => ${val}\n`;
+    });
+  }else{
+    output = "ok";
+  }
   return {
     error: false,
-    message: "ok",
+    message: output,
   };
 }

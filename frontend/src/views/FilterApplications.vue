@@ -36,7 +36,7 @@
                 v-if="summary && !range.includes(column.value) && !noFilter.includes(column.value)"
                 :disabled="!show.includes(column.value) ||
                     (column.value === 'majorName' && summary.universities.length > 1)"
-                hint="Please select a university first"
+                :hint="column.value === 'majorName' ? 'Please select a university first' : ''"
                 :persistent-hint="column.value === 'majorName' && summary.universities.length > 1"
                 :label="column.text"
                 :filter="column.value === 'uniName' ? universityFilter : undefined"

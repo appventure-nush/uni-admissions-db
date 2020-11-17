@@ -1,5 +1,3 @@
-import constants from "./utils/constants";
-
 import UniversityTable from "./models/University";
 
 import Student from "./models/Student";
@@ -7,12 +5,11 @@ import Student from "./models/Student";
 import sequelize from "./models";
 
 
-// eslint-disable-next-line global-require
 import Major from "./models/Major";
 
 
-// eslint-disable-next-line global-require
 import Application from "./models/Application";
+import constants from "./utils/constants";
 
 class ApplicationsRaw {
   public student!: string;
@@ -60,7 +57,7 @@ const applications = applicationsRaw.map((a) => {
   majorsSet.add(JSON.stringify({
     majorNameIndex: a.major,
     majorName,
-    category: "Unknown",
+    category: ["Unknown"],
     uniId: a.uniId,
   }));
   return {

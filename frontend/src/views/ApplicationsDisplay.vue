@@ -29,7 +29,7 @@
         :headers='headers.filter(a=> ["id", "studentId", ...showColumns].includes(a.value))'
         :items="parsedData"
         :loading="parsedData.length===0"
-        :loading-text="fetchError ? fetchError : 'Loading...'"
+        :loading-text="fetchError ? fetchError : 'No Data'"
         :options.sync="options"
         :server-items-length="totalItems"
         item-key="id"
@@ -129,10 +129,9 @@ export default Vue.extend({
           value: "status",
         },
       ] as Array<DataTableHeader>,
-      loading: true,
       totalItems: 0,
       options: {
-        multiSort: true
+        multiSort: true,
       } as DataOptions,
       fetchError: false,
       fetchedData: [] as Array<Application>,
@@ -185,7 +184,6 @@ export default Vue.extend({
   },
   methods: {
     async fetchData(): Promise<Paginated<Application>> {
-      this.loading = true;
       const {page, itemsPerPage, sortBy, sortDesc} = this.options;
       let queryString = `offset=${(page - 1) * itemsPerPage}&limit=${itemsPerPage}`;
       if (sortDesc.length == 1) {
@@ -196,13 +194,6 @@ export default Vue.extend({
         }
       }
       queryString += this.$data.filter;
-      // var cap = Math.round(this.$data.CAPrange[0] * 10);
-      // i = 0;
-      // while (cap <= this.$data.CAPrange[1]) {
-      //   queryString += `&filter[gradCap][${i / 10.0}]=${cap.toString()}`;
-      //   i += 10;
-      //   cap += 0.1;
-      // }
       return fetch(`${config.api}/api/applications?${queryString}`, {
         credentials: "include",
       })
